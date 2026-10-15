@@ -1,0 +1,16 @@
+[project]
+name = "crediagil"
+version = "0.1.0"
+description = "Agente de originación de crédito de libre inversión para Crediágil (fintech ficticia)"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = [".claude/hooks"]
