@@ -20,8 +20,8 @@ momento.
    - Lee el número del Project en `CLAUDE.md`; si es `PENDIENTE`, pide completarlo y termina.
    - Con `issue_read`, comprueba que el issue `n` existe y está abierto.
    - Con `projects_list` (`list_project_items`, `field_names: ["Status"]`), localiza su ítem.
-     Si el acceso al Project falla (p. ej. 403), explica que el `GITHUB_PAT` necesita permiso
-     de Projects de lectura y escritura, y termina. Si el issue no está en el Project,
+     Si el acceso al Project falla (p. ej. 403), explica que el `GITHUB_PAT` debe ser un
+     token classic con scopes `repo` y `project`, y termina. Si el issue no está en el Project,
      informa y termina.
 2. **Rama y diff**:
    - Con `git branch --show-current`, si la rama es `main`, explica que se necesita una rama

@@ -123,7 +123,7 @@ archivo o ejecute otro comando: no puede.
 - **FR-006**: `/open-pr <n>` MUST estar versionado en el repositorio para que lo use todo el equipo.
 - **FR-007**: MUST ejecutar la suite de tests y detenerse sin abrir PR si alguno falla.
 - **FR-008**: MUST invocar el subagente `code-reviewer` sobre el diff de la rama frente a la base.
-- **FR-009**: Si el diff toca lógica de negocio, MUST invocar `compliance-check`. Lógica de negocio: código bajo `src/` relacionado con reglas del Principio I de la constitución (ver Assumptions).
+- **FR-009**: Si el diff toca lógica de negocio, MUST invocar `compliance-check`. Lógica de negocio: cualquier ruta bajo `src/` (ver Assumptions).
 - **FR-010**: Si alguna revisión reporta un hallazgo bloqueante, MUST NOT abrir el PR y MUST listar los hallazgos.
 - **FR-011**: Sin bloqueantes, MUST abrir un PR cuya descripción incluya `Closes #<n>` y mover el ítem a **In review**.
 - **FR-012**: MUST comentar en el issue lo especificado, lo decidido y lo pendiente (a partir de spec, plan y tareas sin completar de la feature).

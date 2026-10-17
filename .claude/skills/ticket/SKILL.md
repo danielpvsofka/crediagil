@@ -24,8 +24,8 @@ GitHub ni en `specs/`.
      completarlo y termina.
    - Llama a `projects_list` con `list_project_fields` y luego `list_project_items`, con
      `field_names: ["Status"]`. Pagina si hace falta.
-   - Si cualquiera de las dos falla (p. ej. 403), explica que el `GITHUB_PAT` necesita
-     permiso de Projects de lectura y escritura, y termina.
+   - Si cualquiera de las dos falla (p. ej. 403), explica que el `GITHUB_PAT` debe
+     ser un token classic con scopes `repo` y `project`, y termina.
 3. **Elegir el ítem**:
    - "siguiente": toma el primer ítem con `Status = Todo` en el orden devuelto. Si no hay
      ninguno, responde "No hay trabajo pendiente en Todo" y termina.

@@ -22,7 +22,7 @@ cd /tmp/crediagil-check && claude
 ```
 
 - Ejecutar `/memory`: aparecen `CLAUDE.md` y la constitución importada.
-- Preguntar "¿cuál es la tasa fija?": la respuesta es 1,8% mensual.
+- Preguntar "¿cuál es la tasa fija?": la respuesta coincide con la de la constitución.
 - `touch CLAUDE.local.md .claude/settings.local.json && git status`: no aparecen.
 
 ## 3. Validación manual en sesión

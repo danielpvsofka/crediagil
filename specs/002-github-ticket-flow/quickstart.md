@@ -2,11 +2,10 @@
 
 ## Prerrequisitos (una vez)
 
-1. Dar al `GITHUB_PAT` acceso de lectura y escritura a Projects:
-   - token classic: scope `project`;
-   - token fine-grained: *Projects: Read and write* de la cuenta.
-
-   El token actual devuelve 403 en `list_projects`.
+1. Usar en `GITHUB_PAT` un token **classic** con scopes `repo` y `project` (completo, no solo
+   `read:project`). Un token fine-grained devuelve 403 en los Projects de una cuenta de
+   usuario. No definas `GITHUB_PAT` en `.claude/settings.local.json`: tiene prioridad sobre la
+   variable de entorno.
 2. Comprobar que el Project del repositorio tiene el campo `Status` con `Todo`, `In progress`,
    `In review` y `Done`. Anotar su número en `CLAUDE.md`, sección "Flujo de tickets".
 3. En **Project → ⋯ → Workflows**, activar dos workflows con `Status: Done`: "Item closed" y

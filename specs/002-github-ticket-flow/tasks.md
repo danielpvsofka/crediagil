@@ -167,6 +167,16 @@ en verde, más el escenario 10 de quickstart.md.
 
 ---
 
+## Trabajo futuro (revisión de `/open-pr 2`, no bloqueante)
+
+- `allow_only_pytest` acepta cualquier argumento de pytest (`--basetemp`, `-p`, `--junitxml`
+  pueden escribir o cargar código): restringir a una lista de opciones permitidas.
+- `block_secret_access` no detecta `secrets` sin `/` ni globs como `.e*`.
+- `compliance-check` y `/open-pr` comparan contra la `main` local: hacer `git fetch` y usar
+  `origin/main`.
+
+---
+
 ## Dependencies & Execution Order
 
 ```text

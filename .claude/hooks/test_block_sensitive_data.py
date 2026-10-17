@@ -51,6 +51,31 @@ def test_caso3_tarjeta_con_separadores_bloquea(run_hook, tmp_path, sep):
     assert "tarjeta" in stderr
 
 
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{card} 123",  # CVV a continuación
+        "{card} 12/28",  # vencimiento a continuación
+        "123 {card}",  # número antes
+        "{grouped} 123",  # tarjeta agrupada seguida de CVV
+        "{grouped}-12",
+    ],
+)
+def test_caso3b_tarjeta_junto_a_otro_numero_bloquea(run_hook, tmp_path, template):
+    card = luhn_valid_number("4", 16)
+    content = template.format(card=card, grouped=grouped(card, " ")) + "\n"
+    code, _, stderr = run_hook(HOOK, write_event(content), tmp_path)
+    assert code == 2, content
+    assert "tarjeta" in stderr
+
+
+@pytest.mark.parametrize(("prefix", "expected"), [("6", 2), ("7", 0)])
+def test_caso3c_borde_del_primer_digito(run_hook, tmp_path, prefix, expected):
+    number = luhn_valid_number(prefix, 16)
+    code, _, _ = run_hook(HOOK, write_event(f"valor = {number}\n"), tmp_path)
+    assert code == expected
+
+
 @pytest.mark.parametrize("length", [12, 20])
 def test_caso4_longitudes_fuera_de_rango_permiten(run_hook, tmp_path, length):
     number = luhn_valid_number("4", length)
@@ -90,6 +115,27 @@ def test_caso8_cuenta_etiquetada_bloquea(run_hook, tmp_path):
     code, _, stderr = run_hook(HOOK, write_event(content), tmp_path)
     assert code == 2
     assert "cuenta" in stderr
+
+
+@pytest.mark.parametrize(("length", "expected"), [(5, 0), (6, 2), (10, 2), (11, 0)])
+def test_caso8b_bordes_de_longitud_de_documento(run_hook, tmp_path, length, expected):
+    content = "cédula: " + "1" * length + "\n"
+    code, _, _ = run_hook(HOOK, write_event(content), tmp_path)
+    assert code == expected
+
+
+@pytest.mark.parametrize(("length", "expected"), [(8, 0), (9, 2), (20, 2), (21, 0)])
+def test_caso8c_bordes_de_longitud_de_cuenta(run_hook, tmp_path, length, expected):
+    content = "cuenta " + "2" * length + "\n"
+    code, _, _ = run_hook(HOOK, write_event(content), tmp_path)
+    assert code == expected
+
+
+@pytest.mark.parametrize(("gap", "expected"), [(30, 2), (31, 0)])
+def test_caso8d_borde_de_distancia_etiqueta_numero(run_hook, tmp_path, gap, expected):
+    content = "cuenta" + " " * gap + "2" * 11 + "\n"
+    code, _, _ = run_hook(HOOK, write_event(content), tmp_path)
+    assert code == expected
 
 
 def test_caso9_pragma_dato_ficticio_permite(run_hook, tmp_path):

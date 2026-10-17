@@ -70,8 +70,9 @@ Code v2.1.x (skills, sub-agents, hooks).
     "Flujo de tickets" de `CLAUDE.md`, que leen las dos piezas.
 - **Hallazgo**: con el `GITHUB_PAT` actual, `list_projects` devuelve
   `403 Resource not accessible by personal access token`.
-- **Prerrequisito**: el token necesita permiso de Projects con lectura y escritura (classic:
-  scope `project`; fine-grained: *Projects: Read and write* de la cuenta). Además, el número
+- **Prerrequisito**: token **classic** con scopes `repo` y `project`. Verificado en T001: un
+  token fine-grained da 403 en los Projects de una cuenta de usuario, y `read:project` solo no
+  permite mover ítems. Además, el número
   del Project se completa en `CLAUDE.md` cuando el token tenga acceso. Ambos pasos están en
   [quickstart.md](./quickstart.md).
 - **Comportamiento sin acceso**: si la primera llamada al Project falla, el comando se detiene

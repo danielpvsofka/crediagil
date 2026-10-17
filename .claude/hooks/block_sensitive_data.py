@@ -47,6 +47,21 @@ def looks_like_card(raw: str) -> bool:
     return 13 <= len(digits) <= 19 and digits[0] in "23456" and luhn_valid(digits)
 
 
+def card_in(raw: str) -> str | None:
+    """Dígitos de la tarjeta contenida en una coincidencia de CARD_RE, si la hay.
+
+    La coincidencia es voraz y puede absorber números vecinos separados por espacio o guion
+    (CVV, vencimiento): se prueba cada tramo contiguo de grupos, no solo la coincidencia entera.
+    """
+    groups = re.split(r"[ -]", raw)
+    for start in range(len(groups)):
+        for end in range(len(groups), start, -1):
+            candidate = " ".join(groups[start:end])
+            if looks_like_card(candidate):
+                return re.sub(r"\D", "", candidate)
+    return None
+
+
 def mask(digits: str) -> str:
     return "••••" + digits[-4:]
 
@@ -54,8 +69,9 @@ def mask(digits: str) -> str:
 def find_in_line(line: str) -> list[tuple[str, str]]:
     findings: list[tuple[str, str]] = []
     for match in CARD_RE.finditer(line):
-        if looks_like_card(match.group()):
-            findings.append(("tarjeta", re.sub(r"\D", "", match.group())))
+        card = card_in(match.group())
+        if card:
+            findings.append(("tarjeta", card))
     for kind, pattern, low, high in (
         ("documento", DOCUMENT_RE, 6, 10),
         ("cuenta", ACCOUNT_RE, 9, 20),
