@@ -13,9 +13,9 @@ from _hooklib import HookInputError, allow, block, new_content, read_event
 HOOK = "block_sensitive_data"
 PRAGMA = "pragma: dato-ficticio"
 
-# 13–19 dígitos con espacios o guiones opcionales entre ellos, como token propio: dígitos
+# Cadena de grupos de dígitos separados por un espacio o guion, como token propio: dígitos
 # incrustados en hashes hex o identificadores alfanuméricos no cuentan.
-CARD_RE = re.compile(r"(?<![\w])\d(?:[ -]?\d){12,18}(?![\w])")
+DIGIT_CHAIN_RE = re.compile(r"(?<![\w])\d+(?:[ -]\d+)*(?![\w])")
 # Etiqueta, hasta 30 caracteres sin dígitos en la misma línea, y el número.
 DOCUMENT_RE = re.compile(
     r"(?i)(?<![\w.])(c[ée]dula|c\.\s?c\.?|cc|nit|documento|doc)\b[^\d\n]{0,30}?(\d[\d.\-]*\d)"
@@ -47,19 +47,25 @@ def looks_like_card(raw: str) -> bool:
     return 13 <= len(digits) <= 19 and digits[0] in "23456" and luhn_valid(digits)
 
 
-def card_in(raw: str) -> str | None:
-    """Dígitos de la tarjeta contenida en una coincidencia de CARD_RE, si la hay.
+def cards_in(chain: str) -> list[str]:
+    """Tarjetas contenidas en una cadena de grupos de dígitos (DIGIT_CHAIN_RE).
 
-    La coincidencia es voraz y puede absorber números vecinos separados por espacio o guion
-    (CVV, vencimiento): se prueba cada tramo contiguo de grupos, no solo la coincidencia entera.
+    Una tarjeta puede ir junto a otros números separados por espacio o guion, antes o después
+    y de cualquier longitud (pedido, año, CVV, vencimiento). Por eso se prueba cada tramo
+    contiguo de grupos, empiece donde empiece, con 13–19 dígitos en total.
     """
-    groups = re.split(r"[ -]", raw)
+    groups = re.split(r"[ -]", chain)
+    found = []
     for start in range(len(groups)):
-        for end in range(len(groups), start, -1):
-            candidate = " ".join(groups[start:end])
-            if looks_like_card(candidate):
-                return re.sub(r"\D", "", candidate)
-    return None
+        digits = 0
+        for end in range(start, len(groups)):
+            digits += len(groups[end])
+            if digits > 19:
+                break
+            candidate = " ".join(groups[start : end + 1])
+            if digits >= 13 and looks_like_card(candidate):
+                found.append(candidate.replace(" ", ""))
+    return found
 
 
 def mask(digits: str) -> str:
@@ -68,10 +74,8 @@ def mask(digits: str) -> str:
 
 def find_in_line(line: str) -> list[tuple[str, str]]:
     findings: list[tuple[str, str]] = []
-    for match in CARD_RE.finditer(line):
-        card = card_in(match.group())
-        if card:
-            findings.append(("tarjeta", card))
+    for match in DIGIT_CHAIN_RE.finditer(line):
+        findings.extend(("tarjeta", card) for card in cards_in(match.group()))
     for kind, pattern, low, high in (
         ("documento", DOCUMENT_RE, 6, 10),
         ("cuenta", ACCOUNT_RE, 9, 20),

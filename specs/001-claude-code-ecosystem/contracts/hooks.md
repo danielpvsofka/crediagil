@@ -34,7 +34,7 @@ cada hook (FR-016). Los números "Luhn válidos" se generan en tiempo de ejecuci
 | 1 | 16 dígitos Luhn válido, empieza por 4 | 2 (`tarjeta`) |
 | 2 | El mismo con el dígito de control alterado | 0 |
 | 3 | Luhn válido con espacios y con guiones | 2 |
-| 3b | Tarjeta junto a otro número separado por espacio o guion (CVV, vencimiento) | 2 |
+| 3b | Tarjeta (agrupada o no) junto a otros números separados por espacio o guion, antes o después y de cualquier longitud: `1234 <tarjeta>`, `Pedido 2026 <tarjeta>`, `<tarjeta> 123`, `<tarjeta> 12/28` | 2 |
 | 4 | Longitudes 12 y 20 (Luhn válido) | 0 |
 | 5 | Longitudes 13 y 19 (Luhn válido) | 2 |
 | 6 | Timestamp ms de 13 dígitos que empieza por 1 | 0 |

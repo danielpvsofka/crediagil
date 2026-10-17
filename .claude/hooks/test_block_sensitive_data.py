@@ -59,11 +59,17 @@ def test_caso3_tarjeta_con_separadores_bloquea(run_hook, tmp_path, sep):
         "123 {card}",  # número antes
         "{grouped} 123",  # tarjeta agrupada seguida de CVV
         "{grouped}-12",
+        "1234 {grouped}",  # número de 4+ dígitos antes de la tarjeta agrupada
+        "1234-{dashed}",
+        "Pedido 2026 {dashed}",
+        "99 {grouped} 123",  # números a ambos lados
+        "{dashed} 2026 12",
     ],
 )
 def test_caso3b_tarjeta_junto_a_otro_numero_bloquea(run_hook, tmp_path, template):
     card = luhn_valid_number("4", 16)
-    content = template.format(card=card, grouped=grouped(card, " ")) + "\n"
+    content = template.format(card=card, grouped=grouped(card, " "), dashed=grouped(card, "-"))
+    content += "\n"
     code, _, stderr = run_hook(HOOK, write_event(content), tmp_path)
     assert code == 2, content
     assert "tarjeta" in stderr
