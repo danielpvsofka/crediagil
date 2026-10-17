@@ -1,0 +1,90 @@
+"""Tests del almacén de estado: research.md R3 (FR-013, FR-014)."""
+
+from __future__ import annotations
+
+import json
+import multiprocessing
+from pathlib import Path
+
+import pytest
+
+from crediagil.mcp_server.errores import ErrorCore, TipoError
+from crediagil.mcp_server.estado import AlmacenEstado, ruta_por_defecto
+from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
+
+
+def test_crea_el_archivo_con_la_semilla(tmp_path):
+    ruta = tmp_path / "sub" / "estado.json"
+    datos = AlmacenEstado(ruta).leer()
+    assert ruta.exists()
+    assert datos["version"] == 1
+    assert len(datos["solicitantes"]) == len(SOLICITANTES_SEMILLA) == 4
+    for solicitante in datos["solicitantes"].values():
+        assert solicitante["intentos_fallidos"] == 0
+        assert solicitante["bloqueado"] is False
+
+
+def test_documentos_semilla_normalizados(tmp_path):
+    datos = AlmacenEstado(tmp_path / "e.json").leer()
+    for solicitante in datos["solicitantes"].values():
+        documento = solicitante["documento"]
+        assert documento == documento.upper().replace(" ", "")
+        assert documento.startswith("TEST-")
+
+
+def test_transaccion_persiste(tmp_path):
+    ruta = tmp_path / "e.json"
+    with AlmacenEstado(ruta).transaccion() as datos:
+        datos["solicitantes"]["SOL-0001"]["intentos_fallidos"] = 2
+    assert AlmacenEstado(ruta).leer()["solicitantes"]["SOL-0001"]["intentos_fallidos"] == 2
+
+
+def test_excepcion_en_transaccion_no_escribe(tmp_path):
+    ruta = tmp_path / "e.json"
+    almacen = AlmacenEstado(ruta)
+    almacen.leer()
+    antes = ruta.read_bytes()
+    with pytest.raises(RuntimeError), almacen.transaccion() as datos:
+        datos["solicitantes"]["SOL-0001"]["bloqueado"] = True
+        raise RuntimeError("falla a mitad")
+    assert ruta.read_bytes() == antes
+    assert not list(tmp_path.glob("*.tmp"))
+
+
+@pytest.mark.parametrize("contenido", ["{no json", "[]", '{"version": 1}'])
+def test_archivo_ilegible_no_se_sobrescribe(tmp_path, contenido):
+    ruta = tmp_path / "e.json"
+    ruta.write_text(contenido, encoding="utf-8")
+    with pytest.raises(ErrorCore) as info:
+        AlmacenEstado(ruta).leer()
+    assert info.value.tipo is TipoError.TRANSITORIO
+    assert info.value.codigo == "ESTADO_ILEGIBLE"
+    assert ruta.read_text(encoding="utf-8") == contenido
+
+
+def _incrementar(ruta: str, veces: int) -> None:
+    almacen = AlmacenEstado(Path(ruta))
+    for _ in range(veces):
+        with almacen.transaccion() as datos:
+            datos["contador"] = datos.get("contador", 0) + 1
+
+
+def test_escrituras_concurrentes_no_se_pierden(tmp_path):
+    ruta = tmp_path / "e.json"
+    AlmacenEstado(ruta).leer()
+    contexto = multiprocessing.get_context("spawn")
+    procesos = [contexto.Process(target=_incrementar, args=(str(ruta), 50)) for _ in range(2)]
+    for proceso in procesos:
+        proceso.start()
+    for proceso in procesos:
+        proceso.join(timeout=60)
+        assert proceso.exitcode == 0
+    assert json.loads(ruta.read_text(encoding="utf-8"))["contador"] == 100
+
+
+def test_ruta_por_defecto(monkeypatch, tmp_path):
+    monkeypatch.delenv("CREDIAGIL_MCP_ESTADO", raising=False)
+    monkeypatch.chdir(tmp_path)
+    assert ruta_por_defecto() == tmp_path / ".data" / "core_estado.json"
+    monkeypatch.setenv("CREDIAGIL_MCP_ESTADO", str(tmp_path / "otro.json"))
+    assert ruta_por_defecto() == tmp_path / "otro.json"

@@ -17,3 +17,6 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# Estado local del core simulado
+.data/
