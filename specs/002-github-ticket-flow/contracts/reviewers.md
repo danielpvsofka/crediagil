@@ -50,13 +50,15 @@ description: Revisión de cumplimiento de la constitución sobre los cambios en 
 context: fork
 agent: compliance-reviewer
 argument-hint: "[issue o nota para el revisor]"
-allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(uv run pytest:*)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git ls-files:*), Bash(uv run pytest:*)
 ---
 ```
 
 - Cuerpo: inyecta `` !`git diff main...HEAD -- src/` `` y `` !`git diff HEAD -- src/` `` (base fija
   `main`; la inyección `!` no admite `$(…)`), incluye `$ARGUMENTS` como contexto y pide el
   veredicto en el formato de abajo.
+- También inyecta `` !`git ls-files --others --exclude-standard -- src/` `` (archivos nuevos sin
+  seguimiento, que no salen en ningún diff) y pide al revisor leerlos con Read.
 - `Bash(git diff:*)` en `allowed-tools` autoriza la inyección `!`, que la ejecuta el harness
   antes del fork. No es para el subagente, al que `allow_only_pytest` le bloquea `git diff`.
 - Si el diff de `src/` está vacío, responde `VEREDICTO: NO BLOQUEANTE` con el hallazgo

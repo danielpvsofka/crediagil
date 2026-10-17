@@ -18,7 +18,12 @@ cambies aquí, en código ni en prompts.
 
 ## Stack y comandos
 
-- Python ≥ 3.12 gestionado con `uv`: `uv sync --group dev` instala pytest y ruff.
+- Python ≥ 3.12 gestionado con `uv`: `uv sync --group dev` instala pydantic, pytest y ruff.
+- Código del agente en `src/crediagil/` (paquete instalable). La política se importa de
+  `crediagil.policy`; los parámetros viven solo en `crediagil/policy/params.py`, verificados
+  contra la constitución por `test_params.py`. Nunca los redefinas en otro módulo.
+- Datos extraídos: `crediagil.extraction` (`{valor, fragmento}` con fragmento literal; lo
+  ausente queda `None`).
 - Tests: `uv run pytest`. Todo cambio de código incluye sus tests en el mismo cambio, junto al
   código, y cubre los bordes exactos de cada umbral.
 - Formato: `ruff format` se aplica solo tras editar cualquier `.py` (hook). Lint:
