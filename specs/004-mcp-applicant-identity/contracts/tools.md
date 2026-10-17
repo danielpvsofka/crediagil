@@ -72,3 +72,14 @@ Respuesta de éxito: `{"ok": true, "verificado": true, "id_solicitante": "SOL-00
 |------|-----------|
 | `list_tools` | `buscar_solicitante` y `verificar_identidad`, con descripción en español y esquema de entrada |
 | Arranque sin archivo de estado | se crea con la semilla |
+
+## Cambios introducidos por #5 (`specs/005-mcp-origination-tools`)
+
+- **Regla de reintento (FR-001a de #5)**: `transitorio` siempre es reintentable; `validacion`
+  lo es solo en `EXTRACCION_INVALIDA` y `FRAGMENTO_NO_LITERAL` (errores de extracción que se
+  corrigen reenviando datos); `negocio` y `permisos` nunca. Los errores `validacion` de esta
+  feature (`PARAMETROS_INVALIDOS`, `FECHA_INVALIDA`) siguen sin ser reintentables.
+- **`verificar_identidad`**: el éxito guarda `verificado_en` (ISO-8601 UTC) en el solicitante;
+  el bloqueo lo borra. Identidad vigente = `verificado_en` presente y no bloqueado.
+- **Estado v2**: añade `solicitudes`, `escalamientos` y `verificado_en`; un archivo v1 se migra
+  al cargarlo sin perder datos.

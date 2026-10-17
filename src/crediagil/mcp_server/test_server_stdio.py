@@ -33,7 +33,8 @@ async def test_arranque_por_stdio_lista_y_ejecuta_herramientas(tmp_path):
         assert ruta_estado.exists()
         herramientas = await sesion.list_tools()
         nombres = {h.name for h in herramientas.tools}
-        assert nombres == {"buscar_solicitante", "verificar_identidad"}
+        assert len(nombres) == 7
+        assert {"buscar_solicitante", "registrar_solicitud", "preaprobar_credito"} <= nombres
 
         resultado = await sesion.call_tool("buscar_solicitante", {"nombre": "prueba"})
         assert resultado.structured_content["ok"] is True

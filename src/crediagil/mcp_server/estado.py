@@ -18,7 +18,7 @@ from filelock import FileLock
 from crediagil.mcp_server.errores import ErrorCore, TipoError
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
 
-VERSION = 1
+VERSION = 2
 
 
 def ruta_por_defecto() -> Path:
@@ -39,10 +39,29 @@ def estado_semilla() -> dict:
                 "documento": normalizar_documento(s["documento"]),
                 "intentos_fallidos": 0,
                 "bloqueado": False,
+                "verificado_en": None,
             }
             for s in SOLICITANTES_SEMILLA
         },
+        "solicitudes": {},
+        "escalamientos": {},
     }
+
+
+def siguiente_id(coleccion: dict, prefijo: str) -> str:
+    """Identificador secuencial `{prefijo}-NNNN`; usar dentro de una transacción."""
+    numeros = [int(clave.rsplit("-", 1)[1]) for clave in coleccion if clave.startswith(prefijo)]
+    return f"{prefijo}-{max(numeros, default=0) + 1:04d}"
+
+
+def _migrar(datos: dict) -> dict:
+    """v1 → v2 (spec 005 R4): añade colecciones y `verificado_en` sin tocar lo existente."""
+    datos.setdefault("solicitudes", {})
+    datos.setdefault("escalamientos", {})
+    for solicitante in datos["solicitantes"].values():
+        solicitante.setdefault("verificado_en", None)
+    datos["version"] = VERSION
+    return datos
 
 
 class AlmacenEstado:
@@ -74,7 +93,7 @@ class AlmacenEstado:
             raise _ilegible() from exc
         if not isinstance(datos, dict) or not isinstance(datos.get("solicitantes"), dict):
             raise _ilegible()
-        return datos
+        return _migrar(datos)
 
     def _escribir(self, datos: dict) -> None:
         with tempfile.NamedTemporaryFile(

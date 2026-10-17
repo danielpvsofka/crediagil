@@ -15,7 +15,8 @@ from typing import Any
 
 from mcp.server import MCPServer
 
-from crediagil.mcp_server import identidad
+from crediagil.extraction import DocumentoNoSoportado
+from crediagil.mcp_server import escalamiento, identidad, originacion
 from crediagil.mcp_server.errores import ErrorCore, TipoError, exito, fallo
 from crediagil.mcp_server.estado import AlmacenEstado, ruta_por_defecto
 from crediagil.mcp_server.fallas import InyectorFallas
@@ -32,6 +33,37 @@ DESCRIPCION_VERIFICAR = (
     "fecha de nacimiento que da el solicitante (AAAA-MM-DD). Tras 3 intentos fallidos el "
     "solicitante queda bloqueado: no reintentes; escala a un analista. Ante un error "
     "transitorio, reintenta."
+)
+DESCRIPCION_VALIDAR = (
+    "Valida los datos que extrajiste de un documento contra su texto completo: cada campo debe "
+    "ser {valor, fragmento} y el fragmento debe aparecer literalmente en el texto. Si el error es "
+    "reintentable, corrige la extracción y vuelve a validar; nunca inventes un valor para cubrir "
+    "un dato faltante."
+)
+DESCRIPCION_REGISTRAR = (
+    "Registra una solicitud de crédito de un solicitante con identidad verificada "
+    "(verificar_identidad), con monto, plazo, ingreso declarado y los documentos (cada uno con "
+    "id_documento, datos extraídos y texto). Guarda cada dato con su documento y fragmento y "
+    "devuelve la evaluación. Si preaprobable_automaticamente es false, escala a un analista con "
+    "las causas; no intentes preaprobar."
+)
+DESCRIPCION_SIMULAR = (
+    "SOLO SIMULA: calcula la cuota mensual de un monto y plazo (y, si das un ingreso, qué "
+    "proporción representa). No registra, no preaprueba y no compromete a Crediágil; no requiere "
+    "identidad. Úsala para responder simulaciones; para comprometer usa preaprobar_credito."
+)
+DESCRIPCION_PREAPROBAR = (
+    "COMPROMETE A CREDIÁGIL: preaprueba una solicitud registrada. Úsala solo si "
+    "registrar_solicitud devolvió preaprobable_automaticamente: true; para simular cuotas usa "
+    "calcular_capacidad_pago. El core vuelve a validar identidad y umbrales y rechaza si no se "
+    "cumplen; en ese caso escala a un analista."
+)
+DESCRIPCION_ESCALAR = (
+    "Escala un caso a un analista humano con un resumen completo para que no tenga que repetir "
+    "preguntas: solicitante, monto, plazo, datos con documento y fragmento, discrepancias, causa, "
+    "detalle y acción recomendada. Úsala de inmediato si el solicitante pide hablar con una "
+    "persona (causa solicitud_humano; monto, plazo y datos pueden ir vacíos) y siempre que la "
+    "evaluación no sea preaprobable."
 )
 INSTRUCCIONES = (
     "Core de originación de Crediágil (simulado, datos ficticios). Toda respuesta es "
@@ -81,6 +113,58 @@ def crear_servidor(almacen: AlmacenEstado, inyector: InyectorFallas) -> MCPServe
         return _responder(
             lambda: identidad.verificar_identidad(almacen, id_solicitante, fecha_nacimiento)
         )
+
+    @servidor.tool(
+        name="validar_extraccion", description=DESCRIPCION_VALIDAR, structured_output=True
+    )
+    def validar_extraccion(datos: dict[str, Any], texto: str) -> dict[str, Any]:
+        def operacion():
+            documento, faltantes = originacion.extraer(datos, texto)
+            return {
+                "extraccion": documento.model_dump(mode="json"),
+                "datos_faltantes": faltantes,
+                "politica_no_cubre": isinstance(documento, DocumentoNoSoportado),
+            }
+
+        return _responder(operacion)
+
+    @servidor.tool(
+        name="registrar_solicitud", description=DESCRIPCION_REGISTRAR, structured_output=True
+    )
+    def registrar_solicitud(
+        id_solicitante: str,
+        monto: int,
+        plazo_meses: int,
+        ingreso_declarado: int,
+        documentos: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        return _responder(
+            lambda: originacion.registrar_solicitud(
+                almacen, id_solicitante, monto, plazo_meses, ingreso_declarado, documentos
+            )
+        )
+
+    @servidor.tool(
+        name="calcular_capacidad_pago", description=DESCRIPCION_SIMULAR, structured_output=True
+    )
+    def calcular_capacidad_pago(
+        monto: int, plazo_meses: int, ingreso_mensual: int | None = None
+    ) -> dict[str, Any]:
+        return _responder(lambda: originacion.simular(monto, plazo_meses, ingreso_mensual))
+
+    @servidor.tool(
+        name="preaprobar_credito", description=DESCRIPCION_PREAPROBAR, structured_output=True
+    )
+    def preaprobar_credito(id_solicitud: str) -> dict[str, Any]:
+        return _responder(lambda: originacion.preaprobar_credito(almacen, id_solicitud))
+
+    @servidor.tool(
+        name="escalar_a_analista", description=DESCRIPCION_ESCALAR, structured_output=True
+    )
+    def escalar_a_analista(
+        resumen: dict[str, Any], id_solicitud: str | None = None
+    ) -> dict[str, Any]:
+        return _responder(lambda: escalamiento.escalar_a_analista(almacen, resumen, id_solicitud))
 
     return servidor
 

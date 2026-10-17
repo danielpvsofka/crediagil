@@ -19,6 +19,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic_core import PydanticCustomError
 
 # Montos en pesos: enteros estrictos y positivos (sin booleanos, decimales ni texto).
 Pesos = Annotated[int, Field(strict=True, gt=0)]
@@ -45,24 +46,28 @@ class DocumentoBase(BaseModel):
 
     @model_validator(mode="after")
     def fragmentos_literales(self, info: ValidationInfo):
-        campos = list(self._campos_extraidos())
+        campos = list(self.campos_extraidos())
         if not campos:
             return self
         texto = (info.context or {}).get("texto")
         if not isinstance(texto, str):
-            # Pydantic solo convierte ValueError en ValidationError.
-            raise ValueError(  # noqa: TRY004
-                "falta el texto del documento para validar los fragmentos"
+            # Tipos de error propios y estables (spec 005 R2): quien valida los distingue sin
+            # interpretar el mensaje.
+            raise PydanticCustomError(
+                "texto_faltante", "falta el texto del documento para validar los fragmentos"
             )
         for nombre, campo in campos:
             if campo.fragmento not in texto:
-                raise ValueError(
-                    f"El fragmento de '{nombre}' no aparece literalmente en el documento: "
-                    f"{campo.fragmento!r}"
+                raise PydanticCustomError(
+                    "fragmento_no_literal",
+                    "El fragmento de '{campo}' no aparece literalmente en el documento: "
+                    "{fragmento}",
+                    {"campo": nombre, "fragmento": repr(campo.fragmento)},
                 )
         return self
 
-    def _campos_extraidos(self):
+    def campos_extraidos(self):
+        """Pares (nombre, CampoExtraido) no nulos, incluidos los de listas (`abonos_nomina[0]`)."""
         for nombre in type(self).model_fields:
             valor = getattr(self, nombre)
             if isinstance(valor, CampoExtraido):

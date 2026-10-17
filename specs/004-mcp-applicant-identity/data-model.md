@@ -78,3 +78,10 @@ Ruta: `CREDIAGIL_MCP_ESTADO` (por defecto `./.data/core_estado.json`, ignorado p
 | `CREDIAGIL_MCP_FALLAS_SEMILLA` | Semilla del generador (reproducible) |
 
 Sin variables: desactivada. Valores inválidos: el servidor no arranca y lo explica.
+
+## Cambios introducidos por #5
+
+- Solicitante: `verificado_en: str | null` (última verificación exitosa; `null` al bloquear).
+- Estado `version: 2` con `solicitudes` y `escalamientos`
+  (ver `specs/005-mcp-origination-tools/data-model.md`); migración automática desde v1.
+- `reintentable`: ver FR-001a de #5 (excepción para errores de extracción).

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import UTC, date, datetime
 
 import pytest
 
@@ -11,6 +11,7 @@ from crediagil.mcp_server.estado import AlmacenEstado
 from crediagil.mcp_server.identidad import (
     MAX_INTENTOS_VERIFICACION,
     buscar_solicitante,
+    identidad_vigente,
     verificar_identidad,
 )
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
@@ -164,3 +165,45 @@ class TestVerificar:
     def test_fecha_de_hoy_es_valida(self, almacen):
         error = error_de(self.verificar, almacen, HOY.isoformat())
         assert error.codigo == "IDENTIDAD_NO_COINCIDE"
+
+
+class TestConstanciaDeVerificacion:
+    """Spec 005 FR-007: la verificación exitosa deja constancia; el bloqueo la borra."""
+
+    AHORA = datetime(2026, 10, 17, 15, 30, tzinfo=UTC)
+
+    def verificar(self, almacen, fecha):
+        return verificar_identidad(almacen, ANA["id_solicitante"], fecha, hoy=HOY, ahora=self.AHORA)
+
+    def solicitante(self, almacen):
+        return almacen.leer()["solicitantes"][ANA["id_solicitante"]]
+
+    def test_exito_guarda_verificado_en(self, almacen):
+        self.verificar(almacen, ANA["fecha_nacimiento"])
+        assert self.solicitante(almacen)["verificado_en"] == "2026-10-17T15:30:00+00:00"
+
+    def test_fallo_sin_bloqueo_conserva_la_verificacion_anterior(self, almacen):
+        self.verificar(almacen, ANA["fecha_nacimiento"])
+        for _ in range(2):
+            with pytest.raises(ErrorCore):
+                self.verificar(almacen, FECHA_INCORRECTA)
+        assert self.solicitante(almacen)["verificado_en"] is not None
+
+    def test_bloqueo_borra_la_verificacion(self, almacen):
+        self.verificar(almacen, ANA["fecha_nacimiento"])
+        for _ in range(3):
+            with pytest.raises(ErrorCore):
+                self.verificar(almacen, FECHA_INCORRECTA)
+        assert self.solicitante(almacen)["verificado_en"] is None
+
+    @pytest.mark.parametrize(
+        ("verificado_en", "bloqueado", "esperado"),
+        [
+            ("2026-10-17T15:30:00+00:00", False, True),
+            (None, False, False),
+            ("2026-10-17T15:30:00+00:00", True, False),
+        ],
+    )
+    def test_identidad_vigente(self, verificado_en, bloqueado, esperado):
+        solicitante = {"verificado_en": verificado_en, "bloqueado": bloqueado}
+        assert identidad_vigente(solicitante) is esperado

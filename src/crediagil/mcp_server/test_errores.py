@@ -43,3 +43,29 @@ def test_fallo_tiene_exactamente_las_cinco_claves():
 def test_fallo_conserva_detalles():
     error = ErrorCore(TipoError.NEGOCIO, "X", "m", {"intentos_restantes": 2})
     assert fallo(error)["error"]["detalles"] == {"intentos_restantes": 2}
+
+
+@pytest.mark.parametrize("codigo", ["EXTRACCION_INVALIDA", "FRAGMENTO_NO_LITERAL"])
+def test_validacion_reintentable_solo_en_codigos_de_extraccion(codigo):
+    error = ErrorCore(TipoError.VALIDACION, codigo, "m", reintentable=True)
+    assert error.reintentable is True
+    assert fallo(error)["error"]["reintentable"] is True
+
+
+@pytest.mark.parametrize(
+    ("tipo", "codigo"),
+    [
+        (TipoError.VALIDACION, "PARAMETROS_INVALIDOS"),
+        (TipoError.NEGOCIO, "EXTRACCION_INVALIDA"),
+        (TipoError.PERMISOS, "IDENTIDAD_NO_VERIFICADA"),
+    ],
+)
+def test_reintentable_no_permitido(tipo, codigo):
+    with pytest.raises(ValueError, match="reintentable"):
+        ErrorCore(tipo, codigo, "m", reintentable=True)
+
+
+def test_transitorio_siempre_reintentable():
+    with pytest.raises(ValueError, match="reintentable"):
+        ErrorCore(TipoError.TRANSITORIO, "X", "m", reintentable=False)
+    assert ErrorCore(TipoError.TRANSITORIO, "X", "m").reintentable is True

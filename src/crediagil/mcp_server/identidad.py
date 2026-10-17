@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from datetime import date
+from datetime import UTC, date, datetime
 
 from crediagil.mcp_server.errores import ErrorCore, TipoError
 from crediagil.mcp_server.estado import AlmacenEstado, normalizar_documento
@@ -57,6 +57,7 @@ def verificar_identidad(
     id_solicitante: str,
     fecha_nacimiento: str,
     hoy: date | None = None,
+    ahora: datetime | None = None,
 ) -> dict:
     """Compara la fecha de nacimiento; bloquea al alcanzar el máximo de intentos fallidos.
 
@@ -78,11 +79,14 @@ def verificar_identidad(
             error = _bloqueado(id_solicitante)
         elif solicitante["fecha_nacimiento"] == fecha.isoformat():
             solicitante["intentos_fallidos"] = 0
+            # Constancia que consultan registro y preaprobación (spec 005, FR-007).
+            solicitante["verificado_en"] = (ahora or datetime.now(UTC)).isoformat()
         else:
             solicitante["intentos_fallidos"] += 1
             restantes = MAX_INTENTOS_VERIFICACION - solicitante["intentos_fallidos"]
             if restantes <= 0:
                 solicitante["bloqueado"] = True
+                solicitante["verificado_en"] = None
                 error = _bloqueado(id_solicitante)
             else:
                 error = ErrorCore(
@@ -94,6 +98,11 @@ def verificar_identidad(
     if error is not None:
         raise error
     return {"verificado": True, "id_solicitante": id_solicitante}
+
+
+def identidad_vigente(solicitante: dict) -> bool:
+    """Verificada alguna vez y no bloqueada desde entonces (la verificación no caduca)."""
+    return solicitante.get("verificado_en") is not None and not solicitante.get("bloqueado")
 
 
 def _validar_fecha(texto: str, hoy: date) -> date:
