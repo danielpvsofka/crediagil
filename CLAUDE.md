@@ -47,8 +47,28 @@ cambies aquí, en código ni en prompts.
 | `block_sensitive_data` | Antes de escribir/editar | el contenido tiene una tarjeta válida por Luhn, o una cédula/NIT/cuenta junto a su etiqueta | Usar datos ficticios generados, o `pragma: dato-ficticio` si es deliberado |
 | `block_secret_access` | Antes de Bash/PowerShell | el comando menciona `.env*` o `secrets/` | Pedir el valor al usuario |
 | `format_python` | Después de escribir/editar | nunca bloquea; avisa si ruff no está disponible | Ejecutar `uv sync --group dev` |
+| `allow_only_pytest` | Antes de Bash, solo en el subagente `compliance-reviewer` (frontmatter, no `settings.json`) | el comando no es `pytest`/`uv run pytest`, o encadena/redirige | Nada: el revisor solo debe leer y ejecutar tests |
 
 Los hooks y sus tests viven en `.claude/hooks/`. Las reglas por ruta, en `.claude/rules/`.
+
+## Flujo de tickets
+
+- Repositorio: `danielpvsofka/crediagil`. Rama base de los PR: `main`.
+- Project: "Crediágil", owner `danielpvsofka` (usuario), número **1**, campo `Status`. El
+  `GITHUB_PAT` necesita un token classic con scopes `repo` y `project`. La opción `Ready` del
+  Project no la usa ningún comando.
+- Estados: `Todo` → `In progress` (`/ticket`) → `In review` (`/open-pr`) → `Done` (workflows
+  integrados "Item closed" y "Pull request merged" del Project, activados a mano).
+  `Closes #n` solo cierra el issue al fusionar en `main`.
+- Lógica de negocio = cualquier ruta bajo `src/` en el diff; dispara `compliance-check`.
+- Piezas:
+  - `/ticket [n|siguiente]` (`.claude/skills/ticket/`): mueve a In progress, genera la spec y
+    comenta en el issue.
+  - `/open-pr <n>` (`.claude/commands/open-pr.md`): tests, revisiones, PR, In review y
+    comentario.
+  - `code-reviewer` (`.claude/agents/`): Read, Grep, Glob.
+  - `compliance-reviewer` (`.claude/agents/`): lectura y pytest (hook `allow_only_pytest`).
+  - `compliance-check` (`.claude/skills/`): `context: fork` con `compliance-reviewer`.
 
 ## Personal
 

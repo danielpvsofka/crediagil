@@ -14,3 +14,5 @@ paths:
 - Todo hook nuevo se registra en `.claude/settings.json` con
   `uv run --no-project python "$CLAUDE_PROJECT_DIR/.claude/hooks/<hook>.py"` y se documenta en
   la tabla de hooks de `CLAUDE.md`.
+- Excepción: un hook que solo aplica a un subagente (p. ej. `allow_only_pytest`) se registra en
+  el frontmatter `hooks:` de ese subagente en `.claude/agents/`, no en `settings.json`.
