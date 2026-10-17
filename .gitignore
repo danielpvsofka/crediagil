@@ -1,0 +1,16 @@
+.vscode/
+
+# Personal (no versionar)
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Secretos
+.env
+.env.*
+secrets/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
