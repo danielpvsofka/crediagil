@@ -169,3 +169,20 @@ def test_json_schema_para_el_extractor():
     esquema = TypeAdapter(Documento).json_schema()
     tipos = {opcion["$ref"].rsplit("/", 1)[-1] for opcion in esquema["oneOf"]}
     assert tipos == {"CertificadoLaboral", "ExtractoBancario", "DocumentoNoSoportado"}
+
+
+class TestTiposDeErrorEstables:
+    """Spec 005 R2: el tipo de error permite distinguir fragmento no literal sin leer el mensaje."""
+
+    def test_fragmento_no_literal_tiene_tipo_propio(self):
+        datos = certificado(salario_mensual=campo(2_500_000, "un salario inventado"))
+        with pytest.raises(ValidationError) as info:
+            validar_documento(datos, TEXTO_CERTIFICADO)
+        error = info.value.errors()[0]
+        assert error["type"] == "fragmento_no_literal"
+        assert error["ctx"]["campo"] == "salario_mensual"
+
+    def test_sin_texto_tiene_tipo_propio(self):
+        with pytest.raises(ValidationError) as info:
+            CertificadoLaboral.model_validate(certificado())
+        assert info.value.errors()[0]["type"] == "texto_faltante"

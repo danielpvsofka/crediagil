@@ -28,6 +28,9 @@ cambies aquí, en código ni en prompts.
   Estado en `.data/core_estado.json` (ignorado; bórralo para volver a la semilla) o en
   `CREDIAGIL_MCP_ESTADO`. Fallas transitorias para pruebas: `CREDIAGIL_MCP_FALLAS_N`,
   `CREDIAGIL_MCP_FALLAS_PROB` y `CREDIAGIL_MCP_FALLAS_SEMILLA`.
+  Herramientas: `buscar_solicitante`, `verificar_identidad`, `validar_extraccion`,
+  `registrar_solicitud`, `calcular_capacidad_pago` (solo simula), `preaprobar_credito` (la única
+  que compromete; revalida identidad y reglas en el core) y `escalar_a_analista`.
 - Tests: `uv run pytest`. Todo cambio de código incluye sus tests en el mismo cambio, junto al
   código, y cubre los bordes exactos de cada umbral.
 - Formato: `ruff format` se aplica solo tras editar cualquier `.py` (hook). Lint:
