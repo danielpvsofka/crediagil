@@ -161,8 +161,8 @@ en verde, más el escenario 10 de quickstart.md.
 - [X] T016 Actualizar la tabla de hooks de `CLAUDE.md` con la fila `allow_only_pytest`: cuándo (antes de Bash en `compliance-reviewer`), qué bloquea (cualquier comando que no sea pytest, o encadenado) y qué hacer. Aclarar que va en el frontmatter del subagente y no en `settings.json`.
 - [X] T017 [P] Si es necesario, ampliar `.claude/rules/hooks.md` con la excepción: un hook que solo aplica a un subagente se registra en el frontmatter de ese subagente, no en `settings.json`.
 - [X] T018 Ejecutar `uv run pytest` (suite completa, incluidos los 86 tests de #1), `uv run ruff format --check` y `uv run ruff check`. Todo en verde.
-- [ ] T019 Validación manual en una sesión real: escenarios 1–10 de quickstart.md con un issue de prueba ficticio. Registrar los resultados y luego cerrar el issue y borrar la rama de prueba con confirmación del usuario.
-  - **Resultado 2026-10-17** (issue de prueba #12, ya cerrado): pasan 2, 3, 5, 6 y 10, y "Item closed" → Done. 1 y 4 verificados en seco. Pendientes: 7 y 9 (PR real y merge, requieren commit/push confirmados) y 8 (sin `src/`).
+- [X] T019 Validación manual en una sesión real: escenarios 1–10 de quickstart.md con un issue de prueba ficticio. Registrar los resultados y luego cerrar el issue y borrar la rama de prueba con confirmación del usuario.
+  - **Resultado 2026-10-17** (issue de prueba #12, ya cerrado): pasan 2, 3, 5, 6 y 10, y "Item closed" → Done. 1 y 4 verificados en seco. Escenario 7 validado con `/open-pr 2` (PR #13, In review y comentario) y 9 con su merge ("Pull request merged" → #2 en Done 2 s después). Diferido: 8 (sin `src/` aún).
 - [X] T020 Con confirmación del usuario, comentar en el issue #2 lo especificado, lo decidido y lo pendiente. No hacer commit ni push sin confirmación explícita.
 
 ---

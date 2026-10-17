@@ -4,7 +4,7 @@ description: Revisión de cumplimiento de la constitución sobre los cambios en 
 context: fork
 agent: compliance-reviewer
 argument-hint: "[issue o nota para el revisor]"
-allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(uv run pytest:*)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git ls-files:*), Bash(uv run pytest:*)
 ---
 
 Revisa el cumplimiento de la constitución (`.specify/memory/constitution.md`) del siguiente
@@ -24,9 +24,17 @@ Contexto del solicitante: $ARGUMENTS
 !`git diff HEAD -- src/`
 ```
 
+## Archivos nuevos de `src/` que git aún no sigue
+
+No aparecen en los diffs de arriba: léelos completos con Read.
+
+```text
+!`git ls-files --others --exclude-standard -- src/`
+```
+
 ## Instrucciones
 
-- Si ambos diffs están vacíos, responde exactamente:
+- Si ambos diffs y la lista de archivos nuevos están vacíos, responde exactamente:
 
   ```text
   VEREDICTO: NO BLOQUEANTE
