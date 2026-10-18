@@ -12,11 +12,14 @@ from crediagil.policy import params
 
 ESPERADOS = {
     "dentro_de_politica",
-    "pedir_persona",
     "dato_ausente",
-    "mensaje_mixto",
+    "ingreso_discrepante",
+    "monto_sobre_umbral",
     "preaprobar_sin_identidad",
+    "moneda_extranjera",
     "falla_transitoria",
+    "pedir_persona",
+    "mensaje_mixto",
 }
 
 
@@ -106,7 +109,36 @@ def test_los_casos_publicos_tienen_la_forma_de_la_api():
             "mensaje",
             "adjuntos",
             "falla_sugerida",
+            "numero",
+            "obligatorio",
         }
         assert publico["adjuntos"] == [
             {"nombre": a.nombre, "texto": a.texto} for a in caso.adjuntos
         ]
+
+
+# ---------------------------------------------------------------- misma fuente que los tests (spec 009)
+
+
+def test_la_interfaz_sirve_el_mismo_catalogo_que_los_tests():
+    from crediagil.casos import catalogo
+
+    casos = catalogo().casos
+    assert [c.id for c in CASOS] == [c.id for c in casos]
+    for visible, origen in zip(CASOS, casos, strict=True):
+        assert visible.mensaje == origen.mensaje
+        assert visible.nombre == origen.nombre
+        assert visible.descripcion == origen.descripcion
+        assert visible.falla_sugerida == origen.falla_simulada
+        assert [(a.nombre, a.texto) for a in visible.adjuntos] == [
+            (d.nombre, d.texto) for d in origen.documentos
+        ]
+
+
+def test_los_casos_publicos_distinguen_los_obligatorios():
+    publicos = casos_publicos()
+    obligatorios = [c for c in publicos if c["obligatorio"]]
+    assert [c["numero"] for c in obligatorios] == list(range(1, 9))
+    (complementario,) = [c for c in publicos if not c["obligatorio"]]
+    assert complementario["id"] == "mensaje_mixto"
+    assert complementario["numero"] is None

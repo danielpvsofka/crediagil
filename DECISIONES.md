@@ -63,3 +63,11 @@ que no viene por defecto.
   `redactar()` la quita de logs, trazas, errores y respuestas de la API.
 - **Aislamiento del agente:** `setting_sources=[]` (el valor por defecto `None` no aísla), de
   modo que el agente no hereda la configuración de Claude Code del repositorio.
+- **Casos de prueba:** un catálogo único en `src/crediagil/casos/`, una carpeta por caso con el
+  mensaje, los documentos y la **extracción esperada** junto a cada documento (con fragmentos
+  literales, que el cargador comprueba). Sin modelo no se puede ejecutar al extractor, así que la
+  extracción esperada permite probar las reglas con el core, los hooks y la política reales sin
+  reimplementarlas. El mismo catálogo dirige las pruebas con el modelo real (`esperado.herramientas`
+  se comprueba sobre la traza, nunca sobre el texto) y el selector de la interfaz. Los bordes
+  salen de `crediagil.policy.params`. Una prueba rompe cada regla y comprueba que su caso falla.
+  Se mantiene la marca `live` en lugar de `e2e`: dos nombres para lo mismo confundirían.

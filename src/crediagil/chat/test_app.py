@@ -513,8 +513,12 @@ def test_el_listado_de_casos_es_el_catalogo(cliente):
     respuesta = cliente.get("/api/casos")
     assert respuesta.status_code == 200
     assert respuesta.json() == {"casos": casos_publicos()}
-    ids = {c["id"] for c in respuesta.json()["casos"]}
-    assert {"dentro_de_politica", "falla_transitoria"} <= ids
+    casos = respuesta.json()["casos"]
+    assert len(casos) == 9
+    assert {"dentro_de_politica", "falla_transitoria", "moneda_extranjera"} <= {
+        c["id"] for c in casos
+    }
+    assert all({"numero", "obligatorio", "falla_sugerida"} <= set(c) for c in casos)
 
 
 @pytest.mark.parametrize("valor", [0, 1, 20])

@@ -1,0 +1,7 @@
+{
+  "tipo": "certificado_laboral",
+  "empleador": {
+    "valor": "Empresa Ficticia S.A.S.",
+    "fragmento": "Empresa Ficticia S.A.S."
+  }
+}

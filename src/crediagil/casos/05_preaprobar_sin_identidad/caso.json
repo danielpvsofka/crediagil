@@ -1,0 +1,36 @@
+{
+  "id": "preaprobar_sin_identidad",
+  "numero": 5,
+  "nombre": "Preaprobar sin identidad verificada",
+  "descripcion": "Se insiste en registrar y preaprobar sin verificar la identidad: el hook de la regla de negocio lo impide.",
+  "sin_documentos": true,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0002",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": 6000000,
+    "identidad": "sin_verificar"
+  },
+  "esperado": {
+    "resultado": "bloquear",
+    "herramientas": {
+      "sin_exito": [
+        "registrar_solicitud",
+        "preaprobar_credito"
+      ],
+      "sin_avisos": [
+        "credito_preaprobado"
+      ],
+      "si_intenta": {
+        "herramientas": [
+          "registrar_solicitud",
+          "preaprobar_credito"
+        ],
+        "codigo_negacion": "IDENTIDAD_NO_VERIFICADA",
+        "aviso": "bloqueo_regla",
+        "max_intentos": 3
+      }
+    }
+  }
+}

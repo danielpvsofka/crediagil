@@ -15,9 +15,8 @@ originación con datos 100% ficticios. Crediágil es una fintech ficticia.
 
 | Issue | Alcance | Estado |
 |---|---|---|
-| #1–#7 | Ecosistema de Claude Code, flujo de tickets, política y extracción, MCP, hooks del SDK, agente | Integrados |
-| #8 | Interfaz de chat | PR abierto |
-| #9 | Casos de prueba obligatorios | Pendiente |
+| #1–#8 | Ecosistema de Claude Code, flujo de tickets, política y extracción, MCP, hooks del SDK, agente, interfaz de chat | Integrados |
+| #9 | Casos de prueba obligatorios | En curso |
 | #10 | Plugin reutilizable | Pendiente |
 | #11 | CI y documentación de entrega | Pendiente |
 
@@ -46,21 +45,36 @@ Tests con el modelo real (opt-in, consumen saldo, se saltan sin clave):
 
 ```bash
 uv run pytest -m live -s                  # todas
+uv run pytest -m live -k casos -s         # los 8 casos obligatorios
 uv run pytest -m live -k chat -s          # solo la de la interfaz
 ```
 
-## Casos de prueba de la interfaz (`src/crediagil/chat/casos.py`)
+La marca se llama `live` y equivale al `e2e` del enunciado.
 
-| Caso | Resultado esperado |
-|---|---|
-| Solicitud dentro de política | ✅ Crédito preaprobado |
-| Pedir hablar con una persona | 🧑‍💼 Escalado inmediato, sin buscar ni verificar antes |
-| Dato ausente en el documento | 📄 Se solicita el dato (queda nulo, no se infiere) |
-| Solicitud y pregunta en el mismo mensaje | 💬 Una sola respuesta; la simulación no registra ni preaprueba |
-| Preaprobar sin identidad verificada | ⛔ Bloqueado por el hook de la regla 1 |
-| Falla transitoria del core | ⚠️ Reintento y continúa (falla simulada con `CREDIAGIL_MCP_FALLAS_N`) |
+## Casos de prueba obligatorios (`src/crediagil/casos/`)
 
-El conjunto completo de casos obligatorios, con sus tests, es el alcance del issue #9.
+Cada caso es una carpeta legible con su mensaje, sus documentos ficticios, la extracción que el
+extractor debe devolver y el resultado esperado (`caso.json`). Es la única fuente: la leen los
+tests deterministas, las pruebas con el modelo real y el selector de la interfaz de chat.
+
+| # | Carpeta | Resultado esperado |
+|---|---|---|
+| 1 | `01_dentro_de_politica` | ✅ Crédito preaprobado |
+| 2 | `02_dato_ausente` | 📄 Se solicita el dato (queda nulo, no se infiere) |
+| 3 | `03_ingreso_discrepante` | 🧑‍💼 Escalado por discrepancia de ingreso |
+| 4 | `04_monto_sobre_umbral` | 🧑‍💼 Escalado por monto (solicitud de $8.000.000) |
+| 5 | `05_preaprobar_sin_identidad` | ⛔ Bloqueado por el hook de la regla 1 |
+| 6 | `06_moneda_extranjera` | 🧑‍💼 Escalado: la política no lo cubre |
+| 7 | `07_falla_transitoria` | ⚠️ Reintento y continúa (`CREDIAGIL_MCP_FALLAS_N`) |
+| 8 | `08_pedir_persona` | 🧑‍💼 Escalado inmediato, sin buscar ni verificar antes |
+| – | `09_mensaje_mixto` | 💬 Complementario: una respuesta; la simulación no registra ni preaprueba |
+
+```bash
+uv run pytest src/crediagil/casos         # sin modelo, red ni clave: un test por caso y los bordes
+```
+
+Los bordes de monto, cuota y discrepancia de ingreso se prueban exactamente en el umbral, un peso
+por debajo y un peso por encima, con valores derivados de la política (no copiados).
 
 ## Arquitectura
 
