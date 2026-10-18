@@ -37,6 +37,18 @@ cambies aquí, en código ni en prompts.
   se cumplen identidad, documentos y política recalculada. Son de solo lectura y fail-closed;
   cada negación queda en `RegistroNegaciones` para la interfaz. El nombre del servidor debe
   coincidir con la clave de `mcp_servers`.
+- Agente: `crediagil.agent.Agente` (`async with Agente(ConfigAgente()) as agente`, `await
+  agente.turno(mensaje, adjuntos)` devuelve un `ResultadoTurno`). Sobre el Claude Agent SDK: el
+  ciclo lo decide la razón de parada (`clasificar_parada`), nunca el texto; los incidentes se
+  escalan por código. Subagente `extractor-documentos` (solo `validar_extraccion`, en primer
+  plano) con un hook sobre `Agent` que exige `documento_id`, nombre y texto completo. Para aislar
+  al agente de la configuración de Claude Code se usa `setting_sources=[]`: el valor por defecto
+  `None` NO aísla. Los prompts (`agent/prompts/`) no llevan la tasa ni los umbrales.
+- Clave de la API: `ANTHROPIC_API_KEY` en el entorno o en el archivo local ignorado por git
+  (`crediagil.config.cargar_entorno()` no pisa variables ya definidas). Nunca escribas su valor en
+  un archivo; `redactar()` la quita de logs, trazas y errores.
+- Pruebas con el modelo real: `uv run pytest -m live -s` (opt-in, consumen saldo; `uv run pytest`
+  las excluye). Se saltan si no hay clave.
 - Tests: `uv run pytest`. Todo cambio de código incluye sus tests en el mismo cambio, junto al
   código, y cubre los bordes exactos de cada umbral.
 - Formato: `ruff format` se aplica solo tras editar cualquier `.py` (hook). Lint:

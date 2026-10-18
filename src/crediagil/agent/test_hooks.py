@@ -47,6 +47,10 @@ CODIGOS = {
     "ESTADO_ILEGIBLE",
     "ENTRADA_INVALIDA",
     "ERROR_INTERNO",
+    # Delegación al subagente (spec 007).
+    "SUBAGENTE_NO_PERMITIDO",
+    "DOCUMENTO_DESCONOCIDO",
+    "DELEGACION_INCOMPLETA",
 }
 
 
