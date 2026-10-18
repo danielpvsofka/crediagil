@@ -58,7 +58,7 @@ a `testpaths` y `pythonpath`
 |-----------|-----------------------|-------------|
 | I. Reglas de negocio | ✅ Implementa las reglas 2 y 3 y parte de la 5 (moneda y documento no soportado) con los parámetros de la constitución, sin modificarlos. Las reglas 1 y 4 quedan fuera (#6, #7). | ✅ `params.py` único y verificado contra la constitución (R2) |
 | II. Garantía en código | ✅ Reglas deterministas en funciones puras que usarán los hooks del SDK (#6); nada depende del prompt. | ✅ |
-| III. Datos ficticios | ✅ Documentos de prueba ficticios; pragma o construcción en tiempo de ejecución para cédula y cuenta (R7). | ✅ |
+| III. Datos ficticios | ✅ Documentos de prueba ficticios; marcador o construcción en tiempo de ejecución para cédula y cuenta (R7). | ✅ |
 | IV. Spec antes que código | ✅ spec → plan → tasks antes de `src/`; `require_specs` lo hace cumplir. | ✅ |
 | V. No inventar datos | ✅ Campo ausente = `None` más dato faltante; ingreso solo del certificado, nunca de extractos. | ✅ Validación de fragmento literal (R4) |
 | VI. Trazabilidad | ✅ Cada campo lleva su fragmento; `IngresoVerificado.origen` conserva el campo de origen. | ✅ |

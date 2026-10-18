@@ -1,0 +1,1 @@
+Hola, soy Ana Prueba Ficticia, mi identificación es TEST-100001 y nací el 1990-03-17. Quiero un crédito de 3.000.000 de pesos a 24 meses. Mi ingreso mensual es de 6.000.000. Te adjunto mi certificado laboral. Aparte, solo por curiosidad: ¿cuánto sería la cuota de 10.000.000 a 48 meses? No quiero solicitar ese.

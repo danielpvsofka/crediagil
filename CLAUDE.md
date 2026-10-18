@@ -48,13 +48,23 @@ cambies aquí, en código ni en prompts.
   (`crediagil.config.cargar_entorno()` no pisa variables ya definidas). Nunca escribas su valor en
   un archivo; `redactar()` la quita de logs, trazas y errores.
 - Pruebas con el modelo real: `uv run pytest -m live -s` (opt-in, consumen saldo; `uv run pytest`
-  las excluye; `-k chat` ejecuta solo la de la interfaz). Se saltan si no hay clave.
+  las excluye; `-k chat` ejecuta solo la de la interfaz; `-k casos` los casos obligatorios). Se
+  saltan si no hay clave. La marca se llama `live` y equivale al `e2e` del enunciado.
+- Casos de prueba obligatorios: `crediagil.casos` (`src/crediagil/casos/`), una carpeta `NN_id/`
+  por caso con `caso.json` (resultado esperado), `mensaje.md`, `documentos/` y `extraccion/` (lo
+  que el extractor debe devolver, con fragmentos literales). `cargar_catalogo()` valida el
+  contrato y es la única fuente: tests deterministas (`test_casos.py`, `test_bordes.py`), pruebas
+  con modelo real (`test_vivo.py`, dirigidas por `esperado.herramientas` y comprobadas sobre la
+  traza con `verificacion.py`) y el selector de la interfaz. Los bordes salen de
+  `crediagil.policy.params`, nunca de literales; los mensajes dicen "identificación" y no
+  "documento" junto al id `TEST-…` para que el detector de datos no pida el marcador en el texto
+  que ve el usuario.
 - Interfaz de chat: `uv run python -m crediagil.chat` abre una aplicación web local en
   `http://127.0.0.1:8000` (`CREDIAGIL_CHAT_PUERTO` cambia el puerto). Solo escucha en `127.0.0.1`,
   no tiene autenticación y **no comprueba `Origin`**: no la expongas en una red. Una conversación
   y un turno a la vez; el hilo vive en memoria. Solo muestra y opera: los avisos salen del
-  `ResultadoTurno` (nunca del texto del modelo) y todo texto entra con `textContent`. Casos de
-  prueba en `crediagil/chat/casos.py`. Reiniciar datos usa `AlmacenEstado.reiniciar()`. El
+  `ResultadoTurno` (nunca del texto del modelo) y todo texto entra con `textContent`. Los casos
+  de prueba salen del catálogo (`crediagil/chat/casos.py` solo lo adapta). Reiniciar datos usa `AlmacenEstado.reiniciar()`. El
   JavaScript no tiene pruebas de navegador: `test_estaticos.py` lo revisa como texto y el
   recorrido manual está en `specs/008-chat-interface/quickstart.md`.
 - Tests: `uv run pytest`. Todo cambio de código incluye sus tests en el mismo cambio, junto al
@@ -66,7 +76,7 @@ cambies aquí, en código ni en prompts.
 
 - Solo datos ficticios en código, tests, fixtures, logs y documentación.
 - Un fixture con forma de cédula o cuenta deliberadamente ficticio se marca en **la misma
-  línea** con `pragma: dato-ficticio`. Si es una edición, el marcador debe estar dentro del
+  línea** con `dato-ficticio`. Si es una edición, el marcador debe estar dentro del
   texto editado. No uses el marcador para nada que pueda ser real.
 - Los números con forma de tarjeta para tests se generan en tiempo de ejecución, nunca como
   literal.
@@ -82,7 +92,7 @@ cambies aquí, en código ni en prompts.
 | Hook | Cuándo | Bloquea si… | Qué hacer |
 |------|--------|-------------|-----------|
 | `require_specs` | Antes de escribir/editar | el archivo está bajo `src/` y la feature activa no tiene `spec.md`, `plan.md` y `tasks.md` no vacíos | Completar el flujo Spec Kit o corregir `.specify/feature.json` |
-| `block_sensitive_data` | Antes de escribir/editar | el contenido tiene una tarjeta válida por Luhn, o una cédula/NIT/cuenta junto a su etiqueta | Usar datos ficticios generados, o `pragma: dato-ficticio` si es deliberado |
+| `block_sensitive_data` | Antes de escribir/editar | el contenido tiene una tarjeta válida por Luhn, o una cédula/NIT/cuenta junto a su etiqueta | Usar datos ficticios generados, o `dato-ficticio` si es deliberado |
 | `block_secret_access` | Antes de Bash/PowerShell | el comando menciona `.env*` o `secrets/` | Pedir el valor al usuario |
 | `format_python` | Después de escribir/editar | nunca bloquea; avisa si ruff no está disponible | Ejecutar `uv sync --group dev` |
 | `allow_only_pytest` | Antes de Bash, solo en el subagente `compliance-reviewer` (frontmatter, no `settings.json`) | el comando no es `pytest`/`uv run pytest`, o encadena/redirige | Nada: el revisor solo debe leer y ejecutar tests |

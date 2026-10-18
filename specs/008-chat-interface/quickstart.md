@@ -62,5 +62,5 @@ Se salta si no hay clave. El coste exacto lo informa el campo `costo_usd` del tu
 | Sintaxis de `app.js` (`node --check`) | válida (la comprueba `test_estaticos.py` si hay Node) |
 | Claves, `innerHTML` y umbrales en lo nuevo | no hay |
 
-**Pendiente**: el recorrido manual de la tabla anterior (12 pasos, incluidos teclado y 360 px) lo
-ejecuta una persona en el navegador (T036); el JavaScript no tiene prueba de navegador.
+**Recorrido manual** (T036): los 12 pasos de la tabla anterior, incluidos teclado y 360 px, los
+ejecutó una persona en el navegador (2026-10-18) y no se anotaron discrepancias.

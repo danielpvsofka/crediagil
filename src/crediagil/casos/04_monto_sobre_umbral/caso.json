@@ -1,0 +1,34 @@
+{
+  "id": "monto_sobre_umbral",
+  "numero": 4,
+  "nombre": "Solicitud de $8.000.000",
+  "descripcion": "Una solicitante con ingreso holgado pide un monto mayor al de preaprobación automática: el agente registra la solicitud y la escala por monto.",
+  "sin_documentos": false,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 8000000,
+    "plazo_meses": 36,
+    "ingreso_declarado": 20000000,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "escalar",
+    "causa": "regla_2",
+    "herramientas": {
+      "debe_llamar": [
+        "registrar_solicitud",
+        "escalar_a_analista"
+      ],
+      "no_debe_llamar": [
+        "preaprobar_credito"
+      ],
+      "avisos": [
+        "escalamiento"
+      ],
+      "sin_avisos": [
+        "credito_preaprobado"
+      ]
+    }
+  }
+}

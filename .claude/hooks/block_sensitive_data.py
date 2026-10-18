@@ -1,6 +1,6 @@
 """PreToolUse: bloquea contenido con forma de tarjeta, documento de identidad o cuenta real.
 
-Principio III (datos exclusivamente ficticios). Una línea con `pragma: dato-ficticio` queda
+Principio III (datos exclusivamente ficticios). Una línea con `dato-ficticio` queda
 exenta (FR-010a).
 """
 
@@ -11,7 +11,7 @@ import re
 from _hooklib import HookInputError, allow, block, new_content, read_event
 
 HOOK = "block_sensitive_data"
-PRAGMA = "pragma: dato-ficticio"
+MARCADOR = "dato-ficticio"
 
 # Cadena de grupos de dígitos separados por un espacio o guion, como token propio: dígitos
 # incrustados en hashes hex o identificadores alfanuméricos no cuentan.
@@ -96,7 +96,7 @@ def main() -> None:
     messages = []
     for text in new_content(event):
         for number, line in enumerate(text.splitlines(), start=1):
-            if PRAGMA in line:
+            if MARCADOR in line:
                 continue
             # Una cuenta puede llevar varias etiquetas ("cuenta de ahorros"): un hallazgo por número.
             for kind, digits in dict.fromkeys(find_in_line(line)):
@@ -106,7 +106,7 @@ def main() -> None:
             HOOK,
             "El contenido tiene datos con forma real (Principio III):\n  - "
             + "\n  - ".join(messages)
-            + "\nUsa datos ficticios generados o marca la línea con '# pragma: dato-ficticio'.",
+            + "\nUsa datos ficticios generados o marca la línea con '# dato-ficticio'.",
         )
     allow()
 

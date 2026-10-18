@@ -187,5 +187,5 @@ con una solicitud de humano antes de registrar nada.
 - Una inconsistencia documental (nómina vs. salario) no impide registrar: la solicitud queda con decisión `analista`.
 - La evaluación combina regla 2, regla 3 y hallazgos de ingreso con `combinar` (#3), como recomendó la revisión de #3.
 - El escalamiento se guarda en el estado del core; reflejarlo como ticket en GitHub (Principio VI) corresponde a la feature del agente (#7).
-- Los textos de documentos y datos de prueba son ficticios; las líneas con forma "documento + número" llevan `pragma: dato-ficticio`.
+- Los textos de documentos y datos de prueba son ficticios; las líneas con forma "documento + número" llevan `dato-ficticio`.
 - Hacer cumplir las reglas 1 y 2 en hooks del Agent SDK sigue siendo #6; aquí el core las revalida como segunda barrera.

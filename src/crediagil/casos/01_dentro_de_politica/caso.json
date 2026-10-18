@@ -1,0 +1,45 @@
+{
+  "id": "dentro_de_politica",
+  "numero": 1,
+  "nombre": "Solicitud dentro de política",
+  "descripcion": "Una solicitante con identidad verificable y un certificado válido pide un crédito: el agente verifica, extrae, registra y preaprueba.",
+  "sin_documentos": false,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": 6000000,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "preaprobar",
+    "herramientas": {
+      "en_orden": [
+        "buscar_solicitante",
+        "verificar_identidad",
+        "registrar_solicitud",
+        "preaprobar_credito"
+      ],
+      "debe_llamar": [
+        "Agent"
+      ],
+      "no_debe_llamar": [
+        "solicitar_informacion",
+        "escalar_a_analista"
+      ],
+      "avisos": [
+        "credito_preaprobado"
+      ],
+      "sin_avisos": [
+        "bloqueo_regla"
+      ],
+      "antes": [
+        [
+          "Agent",
+          "registrar_solicitud"
+        ]
+      ]
+    }
+  }
+}

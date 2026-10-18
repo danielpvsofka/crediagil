@@ -1,0 +1,31 @@
+{
+  "id": "falla_transitoria",
+  "numero": 7,
+  "nombre": "Falla transitoria del core",
+  "descripcion": "La primera llamada al core falla de forma transitoria: el agente reintenta esa llamada y termina el trámite. Activa la falla simulada antes de enviarlo.",
+  "sin_documentos": false,
+  "falla_simulada": 1,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": 6000000,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "reintentar",
+    "herramientas": {
+      "debe_llamar": [
+        "preaprobar_credito"
+      ],
+      "no_debe_llamar": [
+        "escalar_a_analista"
+      ],
+      "avisos": [
+        "credito_preaprobado"
+      ],
+      "reintenta_tras_falla": true,
+      "sin_llamadas_repetidas": true
+    }
+  }
+}

@@ -70,9 +70,9 @@ se versiona.
 `CLAUDE.md` y la constitución importada; `CLAUDE.local.md` y `.claude/settings.local.json`
 no aparecen en `git status` (quickstart §2).
 
-- [X] T007 [P] [US1] Crear `CLAUDE.md` en la raíz, en español, con: (1) `@.specify/memory/constitution.md` en la primera sección; (2) flujo obligatorio `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`; (3) stack: Python ≥ 3.12 con `uv`, formato con `ruff` (automático vía hook), tests con `uv run pytest` junto al código; (4) datos ficticios y uso del marcador `pragma: dato-ficticio` solo para fixtures deliberadamente ficticios; (5) tabla de hooks activos (qué bloquea cada uno y qué hacer si bloquea); (6) los secretos van en `.env`, que el modelo no puede leer; `GITHUB_PAT` se define en el entorno; (7) lo personal va en `CLAUDE.local.md`. No duplicar tasa ni umbrales: remitir a la constitución
+- [X] T007 [P] [US1] Crear `CLAUDE.md` en la raíz, en español, con: (1) `@.specify/memory/constitution.md` en la primera sección; (2) flujo obligatorio `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`; (3) stack: Python ≥ 3.12 con `uv`, formato con `ruff` (automático vía hook), tests con `uv run pytest` junto al código; (4) datos ficticios y uso del marcador `dato-ficticio` solo para fixtures deliberadamente ficticios; (5) tabla de hooks activos (qué bloquea cada uno y qué hacer si bloquea); (6) los secretos van en `.env`, que el modelo no puede leer; `GITHUB_PAT` se define en el entorno; (7) lo personal va en `CLAUDE.local.md`. No duplicar tasa ni umbrales: remitir a la constitución
 - [X] T008 [P] [US1] Actualizar `.gitignore` con las líneas de contracts/config.md que falten: `CLAUDE.local.md`, `.env.*`, `secrets/` (ya existen `.env` y `.claude/settings.local.json`; conservar `.vscode/`)
-- [X] T009 [P] [US1] Crear `.claude/rules/tests.md` con frontmatter `paths: ["**/test_*.py", "**/*_test.py", "tests/**"]` y guía: tests como subproceso para hooks, bordes exactos de umbrales (Principio VII), datos ficticios generados o marcados con `pragma: dato-ficticio`, sin red ni secretos
+- [X] T009 [P] [US1] Crear `.claude/rules/tests.md` con frontmatter `paths: ["**/test_*.py", "**/*_test.py", "tests/**"]` y guía: tests como subproceso para hooks, bordes exactos de umbrales (Principio VII), datos ficticios generados o marcados con `dato-ficticio`, sin red ni secretos
 - [X] T010 [P] [US1] Crear `.claude/rules/mcp-server.md` con frontmatter `paths: ["src/**/mcp/**", "src/**/mcp_server/**"]` y guía: herramientas MCP sin lógica de negocio fuera de los hooks del SDK (Principio II), sin credenciales en código, trazabilidad de origen (Principio VI)
 - [X] T011 [P] [US1] Crear `.claude/rules/hooks.md` con frontmatter `paths: [".claude/hooks/**"]` y guía: solo stdlib, usar `_hooklib.py`, fallo seguro con salida 2, test `test_<hook>.py` obligatorio junto al hook, registro en `.claude/settings.json`
 - [X] T012 [US1] Verificar que `git status --ignored` lista como ignorados `CLAUDE.local.md` y `.claude/settings.local.json` creados de prueba, y luego borrar los archivos de prueba
@@ -105,7 +105,7 @@ vacíos (FR-005–007).
 ## Phase 5: User Story 3 - Ningún dato con forma real (Priority: P1)
 
 **Goal**: bloquear tarjetas válidas por Luhn y cédulas/cuentas etiquetadas, con exención
-`pragma: dato-ficticio` (FR-008–010a).
+`dato-ficticio` (FR-008–010a).
 
 **Independent Test**: casos 1–13 de `block_sensitive_data` en contracts/hooks.md.
 
@@ -115,7 +115,7 @@ vacíos (FR-005–007).
 
 ### Implementation for User Story 3
 
-- [X] T018 [US3] Implementar `.claude/hooks/block_sensitive_data.py` usando `_hooklib.new_content`, línea por línea, saltando las líneas que contienen `pragma: dato-ficticio`. Tarjeta: regex `(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)`, dígitos sin separadores de 13 a 19, primer dígito en `2–6` y Luhn válido. Documento: etiqueta `(?i)\b(c[ée]dula|c\.\s?c\.?|cc|nit|documento|doc)\b` seguida en ≤ 30 caracteres no numéricos de un número que, sin `.` ni `-`, tenga 6–10 dígitos (NIT con DV opcional). Cuenta: etiqueta `(?i)\b(cuenta|cta|ahorros|corriente|account)\b` con 9–20 dígitos y la misma regla de distancia. Si hay hallazgos, bloquea con una línea por hallazgo: `<kind> en línea <n>: ••••<últimos 4>`
+- [X] T018 [US3] Implementar `.claude/hooks/block_sensitive_data.py` usando `_hooklib.new_content`, línea por línea, saltando las líneas que contienen `dato-ficticio`. Tarjeta: regex `(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)`, dígitos sin separadores de 13 a 19, primer dígito en `2–6` y Luhn válido. Documento: etiqueta `(?i)\b(c[ée]dula|c\.\s?c\.?|cc|nit|documento|doc)\b` seguida en ≤ 30 caracteres no numéricos de un número que, sin `.` ni `-`, tenga 6–10 dígitos (NIT con DV opcional). Cuenta: etiqueta `(?i)\b(cuenta|cta|ahorros|corriente|account)\b` con 9–20 dígitos y la misma regla de distancia. Si hay hallazgos, bloquea con una línea por hallazgo: `<kind> en línea <n>: ••••<últimos 4>`
 - [X] T019 [US3] Registrar `block_sensitive_data.py` en `.claude/settings.json` como segundo hook dentro de la misma entrada `Write|Edit|MultiEdit|NotebookEdit` de `PreToolUse` creada en T015
 - [X] T020 [US3] Ejecutar `uv run pytest .claude/hooks/test_block_sensitive_data.py`: todo en verde; confirmar con `git grep` que ningún archivo del repo (salvo regexes) contiene secuencias Luhn válidas
 

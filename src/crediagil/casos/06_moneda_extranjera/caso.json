@@ -1,0 +1,36 @@
+{
+  "id": "moneda_extranjera",
+  "numero": 6,
+  "nombre": "Ingresos en moneda extranjera",
+  "descripcion": "El certificado informa el salario en dólares: la política solo cubre pesos, así que el agente escala sin convertir ni estimar ningún valor.",
+  "sin_documentos": false,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": 4500,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "escalar",
+    "causa": "moneda",
+    "herramientas": {
+      "debe_llamar": [
+        "escalar_a_analista"
+      ],
+      "no_debe_llamar": [
+        "preaprobar_credito"
+      ],
+      "sin_exito": [
+        "preaprobar_credito"
+      ],
+      "avisos": [
+        "escalamiento"
+      ],
+      "sin_avisos": [
+        "credito_preaprobado"
+      ]
+    }
+  }
+}

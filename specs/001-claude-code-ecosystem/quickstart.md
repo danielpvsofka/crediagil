@@ -31,7 +31,7 @@ cd /tmp/crediagil-check && claude
 |------------------------|----------|
 | Crear `src/demo.py` con `feature.json` apuntando a una feature sin `tasks.md` | Bloqueado; menciona `tasks.md` |
 | Escribir un fixture con `cédula: ` + 10 dígitos | Bloqueado (`documento`) |
-| Lo mismo con `# pragma: dato-ficticio` | Permitido |
+| Lo mismo con `# dato-ficticio` | Permitido |
 | Leer `.env` con la herramienta de lectura | Denegado por permisos |
 | `cat .env` por terminal (Bash y PowerShell) | Bloqueado por hook |
 | Escribir un `.py` mal formateado | Queda formateado |

@@ -1,0 +1,28 @@
+{
+  "id": "mensaje_mixto",
+  "numero": null,
+  "obligatorio": false,
+  "nombre": "Solicitud y pregunta en el mismo mensaje",
+  "descripcion": "Una solicitud real y una simulación de otro monto: el agente simula sin registrar ni preaprobar la pregunta y responde una sola vez.",
+  "sin_documentos": false,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": 6000000,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "preaprobar",
+    "herramientas": {
+      "debe_llamar": [
+        "calcular_capacidad_pago",
+        "preaprobar_credito"
+      ],
+      "avisos": [
+        "credito_preaprobado"
+      ]
+    }
+  }
+}

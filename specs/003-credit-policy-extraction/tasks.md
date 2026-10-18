@@ -8,7 +8,7 @@
 **Tests**: obligatorios (spec FR-015, constitución Principio VII). Van junto al código en
 `src/crediagil/**/test_*.py`, se escriben antes de la implementación y deben fallar primero.
 Solo datos ficticios: una línea con forma de cédula o cuenta junto a su etiqueta lleva
-`# pragma: dato-ficticio`.
+`# dato-ficticio`.
 
 ## Format: `[ID] [P?] [Story] Description`
 

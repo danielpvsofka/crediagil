@@ -4,7 +4,7 @@
 
 - La primera sección importa la constitución con `@.specify/memory/constitution.md`.
 - Convenciones del equipo: flujo Spec Kit, idioma de artefactos (español), Python ≥ 3.12 con
-  `uv`, `ruff` como formateador, tests junto al código, marcador `pragma: dato-ficticio`, y
+  `uv`, `ruff` como formateador, tests junto al código, marcador `dato-ficticio`, y
   cómo funcionan los hooks y qué hacer si uno bloquea.
 - No duplica tasa ni umbrales: remite a la constitución.
 

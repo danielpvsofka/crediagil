@@ -8,7 +8,7 @@
 **Tests**: obligatorios (spec FR-018, constitución Principio VII). Van junto al código en
 `src/crediagil/mcp_server/test_*.py`, se escriben primero y deben fallar. Usan `tmp_path` como
 ruta de estado y nunca `.data/`. Los documentos se importan de `semilla.py`, sin repetir
-literales. Una línea con forma "documento + número" lleva `# pragma: dato-ficticio`.
+literales. Una línea con forma "documento + número" lleva `# dato-ficticio`.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -57,7 +57,7 @@ literales. Una línea con forma "documento + número" lleva `# pragma: dato-fict
 - [X] T006 [P] Crear `src/crediagil/mcp_server/semilla.py` con `SOLICITANTES_SEMILLA`, 4 dicts ficticios con `id_solicitante` (`SOL-0001`…`SOL-0004`), `documento` (`TEST-` + 6 dígitos), `nombre` y `fecha_nacimiento` (`AAAA-MM-DD`):
   - Dos nombres contienen "Prueba" (p. ej. "Ana Prueba Ficticia", "Luis Prueba Inventado").
   - Uno contiene "Pérez" con tilde.
-  - Cada línea con `documento` lleva `# pragma: dato-ficticio`.
+  - Cada línea con `documento` lleva `# dato-ficticio`.
   - Docstring: "Datos 100% ficticios para el core simulado."
 - [X] T007 Implementar `src/crediagil/mcp_server/estado.py`:
   - `ruta_por_defecto()` lee `CREDIAGIL_MCP_ESTADO` o devuelve `Path.cwd() / ".data" / "core_estado.json"`.

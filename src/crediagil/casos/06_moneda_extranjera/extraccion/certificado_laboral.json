@@ -1,0 +1,15 @@
+{
+  "tipo": "certificado_laboral",
+  "empleador": {
+    "valor": "Empresa Ficticia S.A.S.",
+    "fragmento": "Empresa Ficticia S.A.S."
+  },
+  "salario_mensual": {
+    "valor": 4500,
+    "fragmento": "salario mensual de USD 4.500"
+  },
+  "moneda": {
+    "valor": "USD",
+    "fragmento": "USD 4.500"
+  }
+}

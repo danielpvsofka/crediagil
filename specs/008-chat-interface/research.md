@@ -120,7 +120,7 @@ mensaje, adjuntos y, opcionalmente, una falla sugerida. Parte de los escenarios 
 con el modelo real en #7: solicitud dentro de política, pedir hablar con una persona, dato
 ausente, mensaje mixto, preaprobar sin identidad y falla transitoria. Los textos de los
 documentos salen de `crediagil.mcp_server.documentos_prueba` y los identificadores llevan el
-prefijo `TEST-` con `pragma: dato-ficticio`.
+prefijo `TEST-` con `dato-ficticio`.
 
 **Por qué**: la lista la sirve la API (`GET /api/casos`), así que la interfaz no tiene casos
 escritos a mano y #9 puede ampliar el catálogo sin tocar la interfaz.

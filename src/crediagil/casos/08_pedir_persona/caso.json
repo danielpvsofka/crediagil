@@ -1,0 +1,27 @@
+{
+  "id": "pedir_persona",
+  "numero": 8,
+  "nombre": "Pedir hablar con una persona",
+  "descripcion": "El solicitante pide una persona antes de dar ningún dato: el agente escala de inmediato, sin buscar ni verificar antes.",
+  "sin_documentos": true,
+  "falla_simulada": 0,
+  "solicitud": null,
+  "esperado": {
+    "resultado": "escalar",
+    "causa": "solicitud_humano",
+    "herramientas": {
+      "primera": "escalar_a_analista",
+      "entrada_primera": {
+        "resumen.causa": "solicitud_humano"
+      },
+      "no_debe_llamar": [
+        "buscar_solicitante",
+        "verificar_identidad",
+        "calcular_capacidad_pago"
+      ],
+      "avisos": [
+        "escalamiento"
+      ]
+    }
+  }
+}

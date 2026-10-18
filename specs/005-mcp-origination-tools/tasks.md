@@ -9,7 +9,7 @@
 
 - Van junto al código, se escriben primero y deben fallar.
 - Usan `tmp_path` para el estado.
-- Los documentos de prueba son textos ficticios construidos con helpers, con pragma si una línea tiene forma "documento + número".
+- Los documentos de prueba son textos ficticios construidos con helpers, con marcador `dato-ficticio` si una línea tiene forma "documento + número".
 - Cada historia expone su herramienta en `server.py` y la prueba en `test_server.py`. Como esos dos archivos son compartidos, esas tareas van en secuencia entre historias.
 
 ## Format: `[ID] [P?] [Story] Description`

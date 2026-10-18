@@ -14,6 +14,6 @@ paths:
 - Los tests de hooks ejecutan el hook como subproceso con el evento JSON por stdin (fixture
   `run_hook` de `.claude/hooks/conftest.py`) y verifican código de salida y stderr.
 - Solo datos ficticios. Los números con forma de tarjeta se generan en tiempo de ejecución
-  (`luhn_valid_number`). Las cédulas o cuentas literales llevan `pragma: dato-ficticio` en la
+  (`luhn_valid_number`). Las cédulas o cuentas literales llevan `dato-ficticio` en la
   misma línea.
 - Sin red, sin secretos y sin depender de variables de entorno reales.

@@ -108,7 +108,7 @@ entero de 6 a 60 meses).
 - **Decision**:
   - Los textos de documentos son ficticios.
   - Las líneas con forma de cédula o cuenta junto a su etiqueta llevan
-    `# pragma: dato-ficticio`, o se construyen en tiempo de ejecución para que
+    `# dato-ficticio`, o se construyen en tiempo de ejecución para que
     `block_sensitive_data` no bloquee.
   - Ningún número con forma de tarjeta.
 - **Orden**: `require_specs` exige `spec.md`, `plan.md` y `tasks.md` no vacíos antes de

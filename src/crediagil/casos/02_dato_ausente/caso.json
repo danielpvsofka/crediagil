@@ -1,0 +1,37 @@
+{
+  "id": "dato_ausente",
+  "numero": 2,
+  "nombre": "Dato ausente en el documento",
+  "descripcion": "El certificado no indica el salario: el agente no inventa el dato ni lo reintenta, lo pide al solicitante.",
+  "sin_documentos": false,
+  "falla_simulada": 0,
+  "solicitud": {
+    "id_solicitante": "SOL-0001",
+    "monto": 3000000,
+    "plazo_meses": 24,
+    "ingreso_declarado": null,
+    "identidad": "verificada"
+  },
+  "esperado": {
+    "resultado": "solicitar_dato",
+    "datos_faltantes": [
+      "salario_mensual"
+    ],
+    "herramientas": {
+      "debe_llamar": [
+        "solicitar_informacion"
+      ],
+      "no_debe_llamar": [
+        "escalar_a_analista",
+        "preaprobar_credito"
+      ],
+      "sin_exito": [
+        "preaprobar_credito"
+      ],
+      "avisos": [
+        "informacion_solicitada"
+      ],
+      "max_validaciones_exitosas": 1
+    }
+  }
+}

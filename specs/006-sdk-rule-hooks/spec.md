@@ -155,5 +155,5 @@ negaciones.
 - La identidad vigente es la definida en #5: verificada alguna vez y no bloqueada desde entonces (no caduca por tiempo).
 - Una solicitud ya preaprobada pasa por las mismas comprobaciones; si el solicitante se bloqueó después, el hook niega aunque la herramienta, por ser idempotente, devolvería el resultado guardado. Es una barrera más estricta a propósito.
 - El hook de preaprobación reutiliza la misma evaluación del core que usa la herramienta, para que ambas barreras nunca discrepen.
-- Los datos y textos de prueba son 100% ficticios; las líneas con forma de documento o cuenta junto a su etiqueta llevan `pragma: dato-ficticio`.
+- Los datos y textos de prueba son 100% ficticios; las líneas con forma de documento o cuenta junto a su etiqueta llevan `dato-ficticio`.
 - Esta feature no necesita la clave de la API: los tests no llaman al modelo. La prueba con el modelo real es de #7.

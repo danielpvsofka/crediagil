@@ -50,8 +50,8 @@ Decisiones de la Fase 0. No quedan `NEEDS CLARIFICATION`.
   palabra).
 - **Cuenta bancaria**: 9 a 20 dígitos con la misma regla de etiqueta: `cuenta`, `cta`,
   `ahorros`, `corriente`, `account`.
-- **Exención**: una línea con `pragma: dato-ficticio` se omite (FR-010a). Es el mismo patrón que
-  usan `# noqa` o `pragma: allowlist secret` de detect-secrets, y queda visible en el diff.
+- **Exención**: una línea con `dato-ficticio` se omite (FR-010a). Es el mismo patrón que
+  usan `# noqa`, y queda visible en el diff.
 - **Mensaje**: tipo de dato, número de línea y valor enmascarado (últimos 4 dígitos).
 - **Alternatives considered**: bloquear cualquier número de 6 o más dígitos (demasiados falsos
   positivos con montos COP); allowlist de rangos "ficticios" (en Colombia no existe un rango de

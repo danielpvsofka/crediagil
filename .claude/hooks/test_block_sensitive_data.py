@@ -144,8 +144,8 @@ def test_caso8d_borde_de_distancia_etiqueta_numero(run_hook, tmp_path, gap, expe
     assert code == expected
 
 
-def test_caso9_pragma_dato_ficticio_permite(run_hook, tmp_path):
-    content = "cedula = 'cédula: " + "1" * 10 + "'  # pragma: dato-ficticio\n"
+def test_caso9_marcador_dato_ficticio_permite(run_hook, tmp_path):
+    content = "cedula = 'cédula: " + "1" * 10 + "'  # dato-ficticio\n"
     code, _, _ = run_hook(HOOK, write_event(content), tmp_path)
     assert code == 0
 

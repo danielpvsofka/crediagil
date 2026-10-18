@@ -66,9 +66,9 @@ Decisiones de la Fase 0. No quedan `NEEDS CLARIFICATION`.
 - **Decision**: la semilla vive en `crediagil/mcp_server/semilla.py` como lista de dicts.
   - Hay 4 solicitantes ficticios. Dos comparten "Prueba" en el nombre, y otro tiene tilde ("Pérez") para probar la normalización.
   - Los documentos son `TEST-` seguido de 6 dígitos.
-  - Cada línea con documento lleva `# pragma: dato-ficticio`.
+  - Cada línea con documento lleva `# dato-ficticio`.
   - Los tests no repiten literales: importan la semilla.
-- **Rationale**: `block_sensitive_data` (#1) reconoce "documento" + número; el pragma es el mecanismo previsto para fixtures deliberadamente ficticios.
+- **Rationale**: `block_sensitive_data` (#1) reconoce "documento" + número; el marcador `dato-ficticio` es el mecanismo previsto para fixtures deliberadamente ficticios.
 - **Alternatives considered**: que el hook exima `TEST-`. Requiere cambiar la feature 001; queda como mejora posible.
 
 ## R7. Tests
