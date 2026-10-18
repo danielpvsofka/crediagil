@@ -1,4 +1,4 @@
-"""Helpers compartidos por los tests del core: documentos 100% ficticios construidos al vuelo."""
+"""Documentos 100% ficticios para los tests: se construyen al vuelo."""
 
 from __future__ import annotations
 

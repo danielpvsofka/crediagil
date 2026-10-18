@@ -3,7 +3,7 @@ name = "crediagil"
 version = "0.1.0"
 description = "Agente de originación de crédito de libre inversión para Crediágil (fintech ficticia)"
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2", "mcp>=2.3,<3", "filelock"]
+dependencies = ["pydantic>=2", "mcp>=2.3,<3", "filelock", "claude-agent-sdk>=0.2.168,<0.3", "anyio>=4"]
 
 [dependency-groups]
 dev = ["pytest", "ruff"]

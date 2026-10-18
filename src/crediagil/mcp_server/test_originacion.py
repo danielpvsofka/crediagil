@@ -11,17 +11,19 @@ from datetime import date
 import pytest
 
 from crediagil.extraction.schemas import CertificadoLaboral, DocumentoNoSoportado
-from crediagil.mcp_server.conftest import doc_certificado, doc_extracto
+from crediagil.mcp_server.documentos_prueba import doc_certificado, doc_extracto
 from crediagil.mcp_server.errores import ErrorCore, TipoError
 from crediagil.mcp_server.estado import AlmacenEstado
 from crediagil.mcp_server.identidad import verificar_identidad
 from crediagil.mcp_server.originacion import (
+    evaluar_solicitud_guardada,
     extraer,
     preaprobar_credito,
     registrar_solicitud,
     simular,
 )
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
+from crediagil.policy import Decision
 
 ANA = SOLICITANTES_SEMILLA[0]
 HOY = date(2026, 10, 17)
@@ -358,3 +360,53 @@ class TestPreaprobar:
     def test_inexistente(self, verificado):
         error = error_de(preaprobar_credito, verificado, "SLC-9999")
         assert (error.tipo, error.codigo) == (TipoError.NEGOCIO, "SOLICITUD_NO_ENCONTRADA")
+
+
+# ------------------------------------------------- evaluación compartida (spec 006, R5)
+
+
+class TestEvaluarSolicitudGuardada:
+    def guardada(self, almacen, id_solicitud):
+        return almacen.leer()["solicitudes"][id_solicitud]
+
+    def test_solicitud_preaprobable(self, verificado):
+        documentos = [doc_certificado(salario=INGRESO_30_EXACTO)]
+        id_solicitud = registrar(verificado, 5_000_000, 12, INGRESO_30_EXACTO, documentos)[
+            "id_solicitud"
+        ]
+        resultado = evaluar_solicitud_guardada(self.guardada(verificado, id_solicitud))
+        assert resultado.decision is Decision.PREAPROBABLE
+        assert resultado.cuota == 467_010
+        assert resultado.motivos == []
+
+    @pytest.mark.parametrize(
+        ("monto", "plazo", "salario", "declarado", "regla"),
+        [
+            (5_000_000, 12, INGRESO_30_EXACTO - 1, INGRESO_30_EXACTO - 1, "regla_2"),
+            (5_000_001, 12, 10_000_000, 10_000_000, "regla_2"),
+            (4_000_000, 24, 2_000_000, 2_200_001, "regla_3"),
+        ],
+    )
+    def test_causas_de_las_reglas(self, verificado, monto, plazo, salario, declarado, regla):
+        documentos = [doc_certificado(salario=salario)]
+        id_solicitud = registrar(verificado, monto, plazo, declarado, documentos)["id_solicitud"]
+        resultado = evaluar_solicitud_guardada(self.guardada(verificado, id_solicitud))
+        assert resultado.decision is Decision.ANALISTA
+        assert regla in [m.regla for m in resultado.motivos]
+
+    def test_incluye_los_hallazgos_documentales(self, verificado):
+        documentos = [doc_certificado(), doc_extracto(2_200_001)]
+        id_solicitud = registrar(verificado, documentos=documentos)["id_solicitud"]
+        resultado = evaluar_solicitud_guardada(self.guardada(verificado, id_solicitud))
+        assert "nomina" in [m.regla for m in resultado.motivos]
+
+    def test_ignora_la_evaluacion_guardada(self, verificado):
+        documentos = [doc_certificado(salario=INGRESO_30_EXACTO - 1)]
+        id_solicitud = registrar(verificado, 5_000_000, 12, INGRESO_30_EXACTO - 1, documentos)[
+            "id_solicitud"
+        ]
+        solicitud = self.guardada(verificado, id_solicitud)
+        solicitud["evaluacion"].update(
+            preaprobable_automaticamente=True, decision="preaprobable", causas_escalamiento=[]
+        )
+        assert evaluar_solicitud_guardada(solicitud).decision is Decision.ANALISTA

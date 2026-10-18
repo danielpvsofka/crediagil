@@ -13,7 +13,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from filelock import FileLock
+from filelock import FileLock, Timeout
 
 from crediagil.mcp_server.errores import ErrorCore, TipoError
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
@@ -73,6 +73,20 @@ class AlmacenEstado:
         with self._lock:
             return self._cargar()
 
+    def leer_existente(self, timeout: float = 5.0) -> dict:
+        """Lectura de solo lectura: no crea el archivo ni lo migra en disco (spec 006, R4).
+
+        Falla con `ESTADO_ILEGIBLE` si no existe, está corrupto o el lock no se obtiene a tiempo.
+        Es lo que usan los hooks, que deben decidir sobre el estado real sin modificarlo.
+        """
+        if not self.ruta.exists():
+            raise _ilegible()
+        try:
+            with self._lock.acquire(timeout=timeout):
+                return self._cargar(crear=False)
+        except (Timeout, OSError) as exc:
+            raise _ilegible() from exc
+
     @contextmanager
     def transaccion(self) -> Iterator[dict]:
         """Bloquea, entrega el estado y lo escribe solo si el bloque termina sin excepción."""
@@ -81,8 +95,10 @@ class AlmacenEstado:
             yield datos
             self._escribir(datos)
 
-    def _cargar(self) -> dict:
+    def _cargar(self, crear: bool = True) -> dict:
         if not self.ruta.exists():
+            if not crear:
+                raise _ilegible()
             self.ruta.parent.mkdir(parents=True, exist_ok=True)
             datos = estado_semilla()
             self._escribir(datos)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from crediagil.mcp_server import identidad
-from crediagil.mcp_server.conftest import doc_certificado
+from crediagil.mcp_server.documentos_prueba import doc_certificado
 from crediagil.mcp_server.estado import AlmacenEstado
 from crediagil.mcp_server.fallas import InyectorFallas
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA

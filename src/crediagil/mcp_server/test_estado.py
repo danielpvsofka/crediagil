@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import json
 import multiprocessing
+import time
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from crediagil.mcp_server.errores import ErrorCore, TipoError
 from crediagil.mcp_server.estado import AlmacenEstado, ruta_por_defecto, siguiente_id
@@ -131,3 +133,54 @@ class TestVersion2:
         assert siguiente_id(coleccion, "SLC") == "SLC-0001"
         coleccion["SLC-0001"] = {}
         assert siguiente_id(coleccion, "SLC") == "SLC-0002"
+
+
+class TestLecturaSoloLectura:
+    """Spec 006 R4: `leer_existente` no crea ni escribe nada y falla cerrado."""
+
+    def test_lee_un_estado_existente(self, tmp_path):
+        almacen = AlmacenEstado(tmp_path / "e.json")
+        almacen.leer()
+        datos = almacen.leer_existente()
+        assert datos["version"] == 2
+        assert len(datos["solicitantes"]) == 4
+
+    def test_migra_en_memoria_sin_escribir(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        v1 = {"version": 1, "solicitantes": {"SOL-0001": {"bloqueado": False}}}
+        ruta.write_text(json.dumps(v1), encoding="utf-8")
+        datos = AlmacenEstado(ruta).leer_existente()
+        assert datos["version"] == 2
+        assert datos["solicitudes"] == {}
+        assert json.loads(ruta.read_text(encoding="utf-8"))["version"] == 1
+
+    def test_archivo_ausente_no_se_crea(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        with pytest.raises(ErrorCore) as info:
+            AlmacenEstado(ruta).leer_existente()
+        assert (info.value.tipo, info.value.codigo) == (TipoError.TRANSITORIO, "ESTADO_ILEGIBLE")
+        assert not ruta.exists()
+
+    def test_directorio_inexistente(self, tmp_path):
+        almacen = AlmacenEstado(tmp_path / "no_existe" / "e.json")
+        with pytest.raises(ErrorCore) as info:
+            almacen.leer_existente()
+        assert info.value.codigo == "ESTADO_ILEGIBLE"
+
+    def test_json_corrupto_queda_intacto(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        ruta.write_text("{no json", encoding="utf-8")
+        with pytest.raises(ErrorCore) as info:
+            AlmacenEstado(ruta).leer_existente()
+        assert info.value.codigo == "ESTADO_ILEGIBLE"
+        assert ruta.read_text(encoding="utf-8") == "{no json"
+
+    def test_lock_ocupado_falla_a_tiempo(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        almacen = AlmacenEstado(ruta)
+        almacen.leer()
+        inicio = time.monotonic()
+        with FileLock(str(ruta) + ".lock"), pytest.raises(ErrorCore) as info:
+            AlmacenEstado(ruta).leer_existente(timeout=0.2)
+        assert info.value.codigo == "ESTADO_ILEGIBLE"
+        assert time.monotonic() - inicio < 2
