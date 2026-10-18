@@ -95,6 +95,16 @@ class AlmacenEstado:
             yield datos
             self._escribir(datos)
 
+    def reiniciar(self) -> None:
+        """Devuelve el estado a la semilla, bajo el bloqueo del archivo (spec 008, R5).
+
+        Sirve aunque el archivo no exista o esté corrupto. Se escribe la semilla en lugar de borrar
+        el archivo: el servidor del core puede estar leyéndolo y el bloqueo evita la carrera.
+        """
+        with self._lock:
+            self.ruta.parent.mkdir(parents=True, exist_ok=True)
+            self._escribir(estado_semilla())
+
     def _cargar(self, crear: bool = True) -> dict:
         if not self.ruta.exists():
             if not crear:

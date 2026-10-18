@@ -11,7 +11,12 @@ import pytest
 from filelock import FileLock
 
 from crediagil.mcp_server.errores import ErrorCore, TipoError
-from crediagil.mcp_server.estado import AlmacenEstado, ruta_por_defecto, siguiente_id
+from crediagil.mcp_server.estado import (
+    AlmacenEstado,
+    estado_semilla,
+    ruta_por_defecto,
+    siguiente_id,
+)
 from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
 
 
@@ -184,3 +189,60 @@ class TestLecturaSoloLectura:
             AlmacenEstado(ruta).leer_existente(timeout=0.2)
         assert info.value.codigo == "ESTADO_ILEGIBLE"
         assert time.monotonic() - inicio < 2
+
+
+class TestReiniciar:
+    """`reiniciar()` devuelve el estado a la semilla bajo el bloqueo del archivo (spec 008, R5)."""
+
+    def test_deja_el_estado_igual_a_la_semilla_tras_usarlo(self, tmp_path):
+        almacen = AlmacenEstado(tmp_path / "e.json")
+        with almacen.transaccion() as datos:
+            datos["solicitudes"]["SLC-0001"] = {"estado": "PREAPROBADA"}
+            datos["escalamientos"]["ESC-0001"] = {"id_escalamiento": "ESC-0001"}
+            datos["solicitantes"]["SOL-0001"]["bloqueado"] = True
+            datos["solicitantes"]["SOL-0001"]["intentos_fallidos"] = 3
+
+        almacen.reiniciar()
+
+        assert almacen.leer() == estado_semilla()
+
+    def test_funciona_si_el_archivo_no_existe(self, tmp_path):
+        ruta = tmp_path / "nuevo" / "e.json"
+        AlmacenEstado(ruta).reiniciar()
+        assert ruta.exists()
+        assert AlmacenEstado(ruta).leer() == estado_semilla()
+
+    def test_otra_instancia_sobre_la_misma_ruta_ve_la_semilla(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        with AlmacenEstado(ruta).transaccion() as datos:
+            datos["escalamientos"]["ESC-0001"] = {}
+        AlmacenEstado(ruta).reiniciar()
+        assert AlmacenEstado(ruta).leer_existente()["escalamientos"] == {}
+
+    def test_repara_un_archivo_corrupto(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        ruta.write_text("{ no es json", encoding="utf-8")
+        AlmacenEstado(ruta).reiniciar()
+        assert AlmacenEstado(ruta).leer() == estado_semilla()
+
+    def test_respeta_el_bloqueo_del_archivo(self, tmp_path):
+        ruta = tmp_path / "e.json"
+        almacen = AlmacenEstado(ruta)
+        almacen.leer()
+        otro = FileLock(str(ruta) + ".lock")
+        otro.acquire()
+        try:
+            multiples = multiprocessing.get_context("spawn").Process(
+                target=_reiniciar_en_otro_proceso, args=(str(ruta),)
+            )
+            multiples.start()
+            multiples.join(timeout=1.0)
+            assert multiples.is_alive(), "reiniciar() no esperó al bloqueo del archivo"
+        finally:
+            otro.release()
+        multiples.join(timeout=10)
+        assert multiples.exitcode == 0
+
+
+def _reiniciar_en_otro_proceso(ruta: str) -> None:
+    AlmacenEstado(Path(ruta)).reiniciar()
