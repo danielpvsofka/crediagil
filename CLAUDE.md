@@ -99,6 +99,22 @@ cambies aquí, en código ni en prompts.
 
 Los hooks y sus tests viven en `.claude/hooks/`. Las reglas por ruta, en `.claude/rules/`.
 
+## Plugin reutilizable
+
+- `plugins/crediagil-devkit/` (catálogo en `.claude-plugin/marketplace.json`) empaqueta
+  `code-reviewer`, `compliance-reviewer`, `compliance-check` y el hook `block_sensitive_data`
+  (con `_hooklib`). Las originales siguen en `.claude/`; el plugin lleva **copias**.
+- Si cambias una pieza empaquetada, copia el cambio al plugin y sube `version` en `plugin.json`
+  y en el catálogo. `uv run pytest .claude/hooks/test_plugin_devkit.py` falla si divergen, si
+  falta o sobra un archivo o si añades una pieza a `.claude/` sin clasificarla (empaquetar o
+  excluir en ese test).
+- Las únicas diferencias admitidas son las variantes declaradas en ese test: un plugin ignora
+  `hooks` en un subagente, así que el `compliance-reviewer` empaquetado es de solo lectura, y la
+  skill referencia al revisor con su prefijo `crediagil-devkit:`.
+- No se empaqueta lo propio de este repositorio (`require_specs`, `format_python`,
+  `block_secret_access`, `/ticket`, `/open-pr`, `speckit-*`). Validar manifiestos:
+  `claude plugin validate . --strict`.
+
 ## Flujo de tickets
 
 - Repositorio: `danielpvsofka/crediagil`. Rama base de los PR: `main`.
