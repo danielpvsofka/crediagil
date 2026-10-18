@@ -1,0 +1,15 @@
+{
+  "name": "crediagil",
+  "owner": {
+    "name": "Crediágil"
+  },
+  "description": "Piezas reutilizables de desarrollo de Crediágil, una fintech ficticia",
+  "plugins": [
+    {
+      "name": "crediagil-devkit",
+      "source": "./plugins/crediagil-devkit",
+      "description": "Revisores, revisión de cumplimiento y bloqueo de datos con forma real",
+      "version": "0.1.0"
+    }
+  ]
+}

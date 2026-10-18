@@ -16,8 +16,8 @@ originación con datos 100% ficticios. Crediágil es una fintech ficticia.
 | Issue | Alcance | Estado |
 |---|---|---|
 | #1–#8 | Ecosistema de Claude Code, flujo de tickets, política y extracción, MCP, hooks del SDK, agente, interfaz de chat | Integrados |
-| #9 | Casos de prueba obligatorios | En curso |
-| #10 | Plugin reutilizable | Pendiente |
+| #9 | Casos de prueba obligatorios | En revisión (PR #20) |
+| #10 | Plugin reutilizable | En curso |
 | #11 | CI y documentación de entrega | Pendiente |
 
 ## Correr en menos de 5 minutos
@@ -100,9 +100,24 @@ Chat (Starlette) ─► Agente orquestador (Agent SDK) ──Agent──► Suba
 | `src/crediagil/chat/` | Interfaz web de chat (API, sesión, adjuntos, casos y estáticos) |
 | `src/crediagil/config.py` | Carga del entorno y redacción de la clave |
 | `.claude/` | Ecosistema de Claude Code del equipo (hooks, agentes, skills, reglas) |
+| `plugins/crediagil-devkit/`, `.claude-plugin/` | Plugin reutilizable para otros equipos y su catálogo |
 | `specs/`, `.specify/` | Artefactos de Spec Kit |
 
-El plugin reutilizable para otros equipos (issue #10) aún no existe.
+## Plugin reutilizable (`plugins/crediagil-devkit/`)
+
+Otro equipo instala las piezas genéricas de `.claude/` (subagente `code-reviewer`, skill
+`compliance-check` con su revisor y el hook que bloquea datos con forma real) con el gestor de
+plugins de Claude Code. El catálogo está en `.claude-plugin/marketplace.json`; las instrucciones
+de instalación y uso, en [plugins/crediagil-devkit/README.md](plugins/crediagil-devkit/README.md).
+
+Las originales siguen en `.claude/` y el plugin lleva copias. Para mantenerlas al día:
+
+```bash
+uv run pytest .claude/hooks/test_plugin_devkit.py   # falla si el plugin diverge de .claude/
+claude plugin validate . --strict                   # valida el catálogo y el plugin
+```
+
+Lo específico de este repositorio (specs obligatorias, flujo de tickets, formato) no se empaqueta.
 
 ## Ecosistema de Claude Code
 

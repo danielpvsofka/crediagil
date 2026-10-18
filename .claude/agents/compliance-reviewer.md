@@ -17,7 +17,9 @@ y ejecutar `uv run pytest` (un hook bloquea cualquier otro comando). No edites n
 ## Procedimiento
 
 1. Lee `.specify/memory/constitution.md` completa. Es la única fuente de la tasa, los umbrales
-   y las reglas; no los tomes de otro lado.
+   y las reglas; no los tomes de otro lado. Si ese archivo no existe, no revises: responde
+   `VEREDICTO: BLOQUEANTE` con el hallazgo `[bloqueante] — falta la constitución: se espera en
+   .specify/memory/constitution.md` y nada más.
 2. Revisa el diff contra cada principio, I a VII:
    - **I**: el cambio respeta las cinco reglas; tasa y umbrales no se alteran ni se
      parametrizan para poder cambiarse. Cada regla afectada tiene tests en el umbral, justo

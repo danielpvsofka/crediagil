@@ -53,6 +53,17 @@ def test_ningun_revisor_puede_escribir():
         assert not tool_set(top_level(path)["tools"]) & WRITE_TOOLS, path
 
 
+def test_compliance_reviewer_avisa_si_falta_constitucion():
+    """FR-010 (spec 010): sin constitución no se revisa; se declara el motivo como bloqueante."""
+    lines = COMPLIANCE_REVIEWER.read_text(encoding="utf-8").splitlines()
+    cuerpo = "\n".join(lines[lines.index("---", 1) + 1 :])
+    procedimiento = cuerpo.split("## Procedimiento", 1)[1].split("## Formato", 1)[0]
+    assert "no existe" in procedimiento
+    assert "falta la constitución" in procedimiento
+    assert "VEREDICTO: BLOQUEANTE" in procedimiento
+    assert ".specify/memory/constitution.md" in procedimiento
+
+
 def test_compliance_check_en_contexto_aislado():
     fields = top_level(COMPLIANCE_CHECK)
     assert fields["context"] == "fork"
