@@ -47,6 +47,10 @@ ACCIONES = {
     "ESTADO_ILEGIBLE": "Reintenta una vez; si persiste, escala a un analista.",
     "ENTRADA_INVALIDA": "Corrige los argumentos de la llamada.",
     "ERROR_INTERNO": "No reintentes de inmediato; escala a un analista si persiste.",
+    # Delegación al subagente (spec 007).
+    "SUBAGENTE_NO_PERMITIDO": "Solo puedes delegar en extractor-documentos.",
+    "DOCUMENTO_DESCONOCIDO": "Indica el documento_id del adjunto.",
+    "DELEGACION_INCOMPLETA": "Pasa documento_id, nombre y texto completo, sin resumir.",
 }
 
 # Sin opinión: la llamada sigue su flujo normal de permisos (no se devuelve `allow` explícito).
