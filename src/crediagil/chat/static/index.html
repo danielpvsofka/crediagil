@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crediágil — Chat</title>
+  <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <h1>Crediágil</h1>
+    <p class="subtitulo">Solicitud de crédito de libre inversión (demostración con datos ficticios)</p>
+  </header>
+
+  <main>
+    <div id="aviso-sistema" class="aviso-sistema" role="alert" hidden></div>
+
+    <section id="hilo" class="hilo" role="log" aria-live="polite" aria-label="Conversación con el agente"></section>
+
+    <p id="estado-agente" class="estado-agente" role="status" hidden>El agente está trabajando…</p>
+
+    <form id="formulario" class="formulario" autocomplete="off">
+      <label for="mensaje" class="solo-lector">Mensaje para el agente</label>
+      <textarea id="mensaje" rows="3" placeholder="Escribe tu mensaje. Enter envía, Shift+Enter salta de línea."></textarea>
+
+      <div class="adjuntar">
+        <label for="adjuntar">Adjuntar documentos (.txt o .md)</label>
+        <input id="adjuntar" type="file" multiple accept=".txt,.md">
+      </div>
+      <ul id="adjuntos" class="adjuntos" aria-label="Archivos adjuntos elegidos"></ul>
+      <p id="error-adjuntos" class="error-adjuntos" role="alert" hidden></p>
+
+      <div class="acciones">
+        <button id="enviar" type="submit" class="primario">Enviar</button>
+        <button id="nueva-conversacion" type="button">Nueva conversación</button>
+      </div>
+    </form>
+
+    <section class="demostracion" aria-labelledby="titulo-demostracion">
+      <h2 id="titulo-demostracion">Demostración</h2>
+
+      <div class="campo">
+        <label for="casos">Caso de prueba</label>
+        <select id="casos">
+          <option value="">Elige un caso para rellenar el mensaje…</option>
+        </select>
+        <p id="descripcion-caso" class="ayuda"></p>
+      </div>
+
+      <div class="campo">
+        <label for="falla">Llamadas del core que fallan (0 a 20)</label>
+        <input id="falla" type="number" min="0" max="20" step="1" value="0" inputmode="numeric">
+        <p class="ayuda">Se aplica al pulsar «Nueva conversación». 0 desactiva la simulación.</p>
+        <p id="falla-activa" class="falla-activa" role="status" hidden></p>
+        <p id="error-falla" class="error-adjuntos" role="alert" hidden></p>
+      </div>
+
+      <div class="acciones">
+        <button id="reiniciar" type="button" class="peligro">Reiniciar datos</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
