@@ -13,7 +13,7 @@ line-length = 100
 target-version = "py312"
 
 [tool.pytest.ini_options]
-testpaths = [".claude/hooks", "src"]
+testpaths = [".claude/hooks", "src", "scripts"]
 pythonpath = ["src"]
 markers = ["live: pruebas con el modelo real; consumen saldo y requieren ANTHROPIC_API_KEY"]
 addopts = "-m 'not live'"
