@@ -104,6 +104,6 @@ opción A. Este trabajo extiende el servidor de #4 y reutiliza la política y la
 
 - **Decision**:
   - Lógica nueva en `crediagil/mcp_server/originacion.py` (extraer, registrar, simular, preaprobar) y `escalamiento.py`; `server.py` registra las 5 herramientas con la envoltura `_responder` de #4.
-  - Tests junto al código, con documentos ficticios construidos en tiempo de ejecución y pragma donde haga falta.
+  - Tests junto al código, con documentos ficticios construidos en tiempo de ejecución y marcador `dato-ficticio` donde haga falta.
   - Bordes de las reglas 2 y 3 vistos desde registro y preaprobación: monto en el tope y +1, cuota 30% exacto y +1, discrepancia 10% exacto y +1.
   - La prueba de extremo a extremo de #4 se amplía: lista 7 herramientas.

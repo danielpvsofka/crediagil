@@ -65,7 +65,7 @@ nuevas
 |-----------|-----------------------|-------------|
 | I. Reglas de negocio | ✅ Las reglas 1, 2, 3 y 5 se aplican en el core con `crediagil.policy` y `crediagil.extraction`; ningún umbral se redefine. La regla 4 tiene una salida sin requisitos previos (`escalar_a_analista` sin identidad). | ✅ Bordes de las reglas 2 y 3 probados desde registro y preaprobación |
 | II. Garantía en código | ✅ Registrar exige identidad y preaprobar revalida identidad y umbrales en código. Las descripciones solo guían (SOLO SIMULA / COMPROMETE). Los hooks del SDK (#6) son la primera barrera; esta es la segunda. | ✅ |
-| III. Datos ficticios | ✅ Textos y documentos ficticios; `pragma` donde el hook lo pida. | ✅ |
+| III. Datos ficticios | ✅ Textos y documentos ficticios; el marcador `dato-ficticio` donde el hook lo pida. | ✅ |
 | IV. Spec antes que código | ✅ La spec incluye los cambios a #3 y #4 (FR-001a, FR-007). | ✅ |
 | V. No inventar datos | ✅ Sin salario certificado, `INGRESO_NO_VERIFICABLE` con los datos faltantes; nunca se infiere. | ✅ |
 | VI. Trazabilidad | ✅ Cada dato guardado lleva `id_documento` y fragmento; el escalamiento exige procedencia en los datos. Reflejarlo como ticket de GitHub queda para #7. | ✅ |

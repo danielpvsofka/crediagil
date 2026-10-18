@@ -9,7 +9,7 @@
 fallar. Los tests de los hooks invocan los callbacks **como lo hace el SDK**: con el diccionario de
 entrada de `PreToolUse` y comprobando la salida del SDK, sin modelo, sin red y sin la clave de la
 API. Usan `tmp_path` para el estado y los documentos ficticios de `documentos_prueba.py`. Una línea
-con forma de documento o cuenta junto a su etiqueta lleva `# pragma: dato-ficticio`.
+con forma de documento o cuenta junto a su etiqueta lleva `# dato-ficticio`.
 
 **Orden dentro de `hooks.py` y `test_hooks.py`**: US1 → US2 → US3 → US4 comparten esos dos
 archivos, así que van en secuencia.

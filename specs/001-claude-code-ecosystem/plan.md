@@ -14,7 +14,7 @@ de Claude Code registrados en `.claude/settings.json`:
 1. `require_specs.py` (PreToolUse, escritura): bloquea cambios en `src/` si la feature activa
    (`.specify/feature.json`) no tiene `spec.md`, `plan.md` y `tasks.md` no vacíos.
 2. `block_sensitive_data.py` (PreToolUse, escritura): bloquea tarjetas válidas por Luhn y
-   cédulas/cuentas etiquetadas, con exención por línea `pragma: dato-ficticio`.
+   cédulas/cuentas etiquetadas, con exención por línea `dato-ficticio`.
 3. `block_secret_access.py` (PreToolUse, Bash y PowerShell): bloquea comandos que toquen
    `.env*` o `secrets/`; `permissions.deny` cubre las herramientas de archivo.
 4. `format_python.py` (PostToolUse, escritura): `ruff format` sobre cada `.py` editado, sin
@@ -58,7 +58,7 @@ formato nunca bloquea; ningún secreto ni dato real en el repo, tampoco en tests
 |-----------|-----------------------|-------------|
 | I. Reglas de negocio no negociables | N/A: la feature no toca originación ni tasa/umbrales. `CLAUDE.md` los importa vía la constitución sin duplicarlos. | ✅ Sin cambios |
 | II. Garantía en código, guía en instrucciones | ✅ Cada regla determinista de desarrollo (specs, datos, secretos, formato) es un hook o `permissions.deny`; `CLAUDE.md` y `.claude/rules/` solo guían el juicio. | ✅ Mapeo regla→hook en [data-model.md](./data-model.md) |
-| III. Datos exclusivamente ficticios | ✅ Hook de datos sensibles; los tests generan números Luhn en tiempo de ejecución; `.mcp.json` usa `${GITHUB_PAT}`. | ✅ `pragma: dato-ficticio` explícito y revisable (FR-010a) |
+| III. Datos exclusivamente ficticios | ✅ Hook de datos sensibles; los tests generan números Luhn en tiempo de ejecución; `.mcp.json` usa `${GITHUB_PAT}`. | ✅ `dato-ficticio` explícito y revisable (FR-010a) |
 | IV. Spec antes que código | ✅ Esta feature sigue specify→plan→tasks; el hook `require_specs` lo garantiza para `src/` en adelante. | ✅ |
 | V. No inventar datos | N/A: sin extracción de documentos. | ✅ |
 | VI. Trazabilidad | ✅ Spec y plan enlazan el issue #1. Automatización de tickets fuera de alcance (issue #2). | ✅ |

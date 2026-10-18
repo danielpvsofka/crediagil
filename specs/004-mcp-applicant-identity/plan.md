@@ -62,7 +62,7 @@ completa)
 |-----------|-----------------------|-------------|
 | I. Reglas de negocio | ✅ Da la verificación de identidad que necesita la regla 1. No toca tasa ni umbrales. | ✅ Hacer cumplir "verificada antes de registrar" queda en hooks del SDK (#6) |
 | II. Garantía en código | ✅ El bloqueo tras 3 intentos es determinista y está en código, no en la descripción de la herramienta. Las descripciones solo guían cuándo usarla y cuándo escalar (`.claude/rules/mcp-server.md`). | ✅ |
-| III. Datos ficticios | ✅ Semilla ficticia con documentos `TEST-` y `pragma: dato-ficticio`. Estado ignorado por git. Sin credenciales. | ✅ (R6) |
+| III. Datos ficticios | ✅ Semilla ficticia con documentos `TEST-` y `dato-ficticio`. Estado ignorado por git. Sin credenciales. | ✅ (R6) |
 | IV. Spec antes que código | ✅ spec → plan → tasks; `require_specs` lo exige para `src/`. | ✅ |
 | V. No inventar datos | ✅ La búsqueda solo devuelve datos del core; sin coincidencias, lista vacía. Nunca se infiere. | ✅ |
 | VI. Trazabilidad | ✅ Las respuestas identifican al solicitante (`id_solicitante`, documento) del core. Los tickets de escalamiento quedan para #7. | ✅ |
@@ -94,7 +94,7 @@ src/crediagil/mcp_server/
 ├── __init__.py
 ├── errores.py        / test_errores.py      # TipoError, ErrorCore, exito(), fallo()
 ├── estado.py         / test_estado.py       # AlmacenEstado: lock, transacción, escritura atómica, semilla
-├── semilla.py                               # 4 solicitantes ficticios (pragma: dato-ficticio)
+├── semilla.py                               # 4 solicitantes ficticios (dato-ficticio)
 ├── fallas.py         / test_fallas.py       # InyectorFallas desde variables de entorno
 ├── identidad.py      / test_identidad.py    # buscar_solicitante, verificar_identidad (lógica pura)
 ├── server.py         / test_server.py       # MCPServer, envoltura de respuesta, main()

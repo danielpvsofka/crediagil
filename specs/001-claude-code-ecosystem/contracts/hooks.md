@@ -40,7 +40,7 @@ cada hook (FR-016). Los números "Luhn válidos" se generan en tiempo de ejecuci
 | 6 | Timestamp ms de 13 dígitos que empieza por 1 | 0 |
 | 7 | `cédula: ` + 10 dígitos | 2 (`documento`) |
 | 8 | `cuenta de ahorros ` + 11 dígitos | 2 (`cuenta`) |
-| 9 | Caso 7 con `# pragma: dato-ficticio` en la línea | 0 |
+| 9 | Caso 7 con `# dato-ficticio` en la línea | 0 |
 | 10 | Monto `5000000` y `monto: 5.000.000 COP` | 0 |
 | 11 | MultiEdit con el hallazgo en el segundo edit | 2 |
 | 12 | stderr no contiene el número completo | ✔ |

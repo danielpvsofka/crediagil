@@ -224,7 +224,7 @@ bloquear, y todos pasan.
   (p. ej. "cédula", "CC", "C.C.", "NIT", "documento", "cuenta", "ahorros", "corriente").
 - **FR-010**: El mensaje de bloqueo MUST indicar el tipo de dato y la ubicación aproximada sin
   reproducir el valor completo.
-- **FR-010a**: Una línea que contenga el marcador explícito `pragma: dato-ficticio` MUST quedar
+- **FR-010a**: Una línea que contenga el marcador explícito `dato-ficticio` MUST quedar
   exenta de las verificaciones de FR-008 y FR-009, para permitir fixtures ficticios
   deliberados (Principio III). El uso del marcador queda visible en revisión de código.
 
@@ -293,7 +293,7 @@ bloquear, y todos pasan.
   formatos colombianos habituales (cédula de 6–10 dígitos; cuentas de 9–20 dígitos).
 - `.env.example`, si se crea, lo mantiene un humano: queda bloqueado para el modelo igual que
   el resto de `.env*`, porque `permissions.deny` no admite excepciones por patrón.
-- Los fixtures ficticios con forma de cédula o cuenta se marcan con `pragma: dato-ficticio`
+- Los fixtures ficticios con forma de cédula o cuenta se marcan con `dato-ficticio`
   (FR-010a); el hook no puede distinguir por sí solo un número ficticio de uno real.
 - Los desarrolladores tienen ruff disponible en su entorno (se documentará en `CLAUDE.md`); su
   ausencia no bloquea la edición (FR-015).

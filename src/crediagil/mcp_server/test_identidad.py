@@ -19,7 +19,7 @@ from crediagil.mcp_server.semilla import SOLICITANTES_SEMILLA
 ANA = SOLICITANTES_SEMILLA[0]
 HOY = date(2026, 10, 17)
 FECHA_INCORRECTA = "2000-01-01"
-DOCUMENTO_INEXISTENTE = "TEST-999999"  # pragma: dato-ficticio
+DOCUMENTO_INEXISTENTE = "TEST-999999"  # dato-ficticio
 
 
 @pytest.fixture

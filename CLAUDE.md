@@ -66,7 +66,7 @@ cambies aquí, en código ni en prompts.
 
 - Solo datos ficticios en código, tests, fixtures, logs y documentación.
 - Un fixture con forma de cédula o cuenta deliberadamente ficticio se marca en **la misma
-  línea** con `pragma: dato-ficticio`. Si es una edición, el marcador debe estar dentro del
+  línea** con `dato-ficticio`. Si es una edición, el marcador debe estar dentro del
   texto editado. No uses el marcador para nada que pueda ser real.
 - Los números con forma de tarjeta para tests se generan en tiempo de ejecución, nunca como
   literal.
@@ -82,7 +82,7 @@ cambies aquí, en código ni en prompts.
 | Hook | Cuándo | Bloquea si… | Qué hacer |
 |------|--------|-------------|-----------|
 | `require_specs` | Antes de escribir/editar | el archivo está bajo `src/` y la feature activa no tiene `spec.md`, `plan.md` y `tasks.md` no vacíos | Completar el flujo Spec Kit o corregir `.specify/feature.json` |
-| `block_sensitive_data` | Antes de escribir/editar | el contenido tiene una tarjeta válida por Luhn, o una cédula/NIT/cuenta junto a su etiqueta | Usar datos ficticios generados, o `pragma: dato-ficticio` si es deliberado |
+| `block_sensitive_data` | Antes de escribir/editar | el contenido tiene una tarjeta válida por Luhn, o una cédula/NIT/cuenta junto a su etiqueta | Usar datos ficticios generados, o `dato-ficticio` si es deliberado |
 | `block_secret_access` | Antes de Bash/PowerShell | el comando menciona `.env*` o `secrets/` | Pedir el valor al usuario |
 | `format_python` | Después de escribir/editar | nunca bloquea; avisa si ruff no está disponible | Ejecutar `uv sync --group dev` |
 | `allow_only_pytest` | Antes de Bash, solo en el subagente `compliance-reviewer` (frontmatter, no `settings.json`) | el comando no es `pytest`/`uv run pytest`, o encadena/redirige | Nada: el revisor solo debe leer y ejecutar tests |

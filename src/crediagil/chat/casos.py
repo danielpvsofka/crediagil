@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from crediagil.agent.documentos import DocumentoAdjunto
 from crediagil.mcp_server.documentos_prueba import doc_certificado
 
-DOCUMENTO_ANA = "TEST-100001"  # pragma: dato-ficticio
-DOCUMENTO_LUIS = "TEST-100002"  # pragma: dato-ficticio
+DOCUMENTO_ANA = "TEST-100001"  # dato-ficticio
+DOCUMENTO_LUIS = "TEST-100002"  # dato-ficticio
 NACIMIENTO_ANA = "1990-03-17"
 NOMBRE_ANA = "Ana Prueba Ficticia"
 
