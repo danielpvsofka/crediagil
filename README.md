@@ -1,5 +1,7 @@
 # Crediágil · Agente de originación de crédito
 
+[![CI](https://github.com/danielpvsofka/crediagil/actions/workflows/ci.yml/badge.svg)](https://github.com/danielpvsofka/crediagil/actions/workflows/ci.yml)
+
 Agente construido con el **Claude Agent SDK** que extrae datos de documentos de soporte,
 calcula la capacidad de pago, preaprueba los casos simples y escala al analista cuando
 corresponde. Las herramientas del core viven en un **servidor MCP** propio que simula la
@@ -15,17 +17,15 @@ originación con datos 100% ficticios. Crediágil es una fintech ficticia.
 
 | Issue | Alcance | Estado |
 |---|---|---|
-| #1–#8 | Ecosistema de Claude Code, flujo de tickets, política y extracción, MCP, hooks del SDK, agente, interfaz de chat | Integrados |
-| #9 | Casos de prueba obligatorios | En revisión (PR #20) |
-| #10 | Plugin reutilizable | En curso |
-| #11 | CI y documentación de entrega | Pendiente |
+| #1–#10 | Ecosistema de Claude Code, flujo de tickets, política y extracción, MCP, hooks del SDK, agente, interfaz de chat, casos de prueba obligatorios, plugin reutilizable | Integrados |
+| #11 | CI y documentación de entrega | En curso |
 
 ## Correr en menos de 5 minutos
 
 Requisitos: Python 3.12+, [uv](https://docs.astral.sh/uv/) y una `ANTHROPIC_API_KEY`.
 
 ```bash
-git clone <repo> && cd <repo>
+git clone https://github.com/danielpvsofka/crediagil.git && cd crediagil
 uv sync --group dev                       # instala dependencias
 uv run pytest                             # suite determinista, sin red ni API key
 export ANTHROPIC_API_KEY=...              # o defínela en un archivo .env local (ignorado por git)
@@ -50,6 +50,22 @@ uv run pytest -m live -k chat -s          # solo la de la interfaz
 ```
 
 La marca se llama `live` y equivale al `e2e` del enunciado.
+
+## Verificación automática
+
+Cada cambio hacia `main` pasa por `.github/workflows/ci.yml`, con tres trabajos independientes:
+**formato** (`ruff`), **pruebas** (`uv run pytest`, sin las `live`) y **escaneo** de datos con
+forma real y credenciales sobre todo el repositorio. No usa secretos ni consume saldo del modelo.
+Lo mismo en local:
+
+```bash
+uv run ruff format --check && uv run ruff check
+uv run --no-project python scripts/scan_repo.py    # 0 limpio · 1 hay hallazgos · 2 no pudo ejecutarse
+```
+
+El escaneo usa el mismo detector que el hook `block_sensitive_data`, nunca imprime el valor
+encontrado y no exime una credencial ni con `dato-ficticio`. Exigir que los tres trabajos pasen
+antes de fusionar es un ajuste de la rama `main` en GitHub, fuera de este repositorio.
 
 ## Casos de prueba obligatorios (`src/crediagil/casos/`)
 

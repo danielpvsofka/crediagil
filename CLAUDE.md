@@ -71,6 +71,20 @@ cambies aquí, en código ni en prompts.
   código, y cubre los bordes exactos de cada umbral.
 - Formato: `ruff format` se aplica solo tras editar cualquier `.py` (hook). Lint:
   `uv run ruff check`.
+- CI: `.github/workflows/ci.yml` corre en cada PR hacia `main` y en cada push a `main`, con tres
+  trabajos independientes: `formato` (`ruff format --check` y `ruff check`), `pruebas`
+  (`uv run pytest`, sin las `live`) y `escaneo` (`scripts/scan_repo.py`). Sin secretos, sin clave
+  del modelo, permisos de solo lectura y acciones fijadas por commit (un cambio al workflow
+  respeta `scripts/test_ci.py`).
+- Escaneo local: `uv run --no-project python scripts/scan_repo.py [--github] [--raiz RUTA]`.
+  Reutiliza el detector del hook `block_sensitive_data` y añade archivos de entorno o de secretos
+  y credenciales (Anthropic, GitHub, AWS, clave privada). Nunca imprime el valor. Ignora `uv.lock`
+  (generado: sus hashes parecen cédulas). `dato-ficticio` exime datos con forma real, **no**
+  credenciales. Salida 0 limpio, 1 con hallazgos, 2 si no pudo ejecutarse. El hook no se puede
+  importar dentro de pytest (`_hooklib` reconfigura `stdin`): sus tests van por subproceso.
+- `scripts/` tiene sus propios tests (entran en `uv run pytest`); el módulo de apoyo se llama
+  `prueba_comun.py`, no `conftest.py`. `test_entrega.py` vigila que `DECISIONES.md` no pase de
+  1.000 palabras (dos páginas) y que el README conserve sus enlaces y comandos.
 
 ## Datos ficticios
 

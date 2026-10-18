@@ -355,6 +355,11 @@ def arbol(tmp_path) -> Path:
     return tmp_path
 
 
+def a_crlf(datos: bytes) -> bytes:
+    """Fin de línea `\\r\\n` sin duplicar el `\\r` de un clon con `autocrlf` que ya lo trae."""
+    return datos.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+
+
 def motivos(raiz: Path) -> set[tuple[str, str]]:
     return {(i.motivo, i.pieza) for i in comprobar(raiz)}
 
@@ -410,12 +415,12 @@ class TestControlesNegativos:
 
     def test_solo_cambia_el_fin_de_linea_de_un_original(self, arbol):
         for original in (arbol / ".claude" / "agents").glob("*.md"):
-            original.write_bytes(original.read_bytes().replace(b"\n", b"\r\n"))
+            original.write_bytes(a_crlf(original.read_bytes()))
         assert comprobar(arbol) == []
 
     def test_solo_cambia_el_fin_de_linea_de_una_copia(self, arbol):
         copia = arbol / "plugins" / NOMBRE / "hooks" / "_hooklib.py"
-        copia.write_bytes(copia.read_bytes().replace(b"\n", b"\r\n"))
+        copia.write_bytes(a_crlf(copia.read_bytes()))
         assert comprobar(arbol) == []
 
 
