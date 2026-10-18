@@ -280,6 +280,26 @@ def simular(monto: int, plazo_meses: int, ingreso_mensual: int | None = None) ->
 # ---------------------------------------------------------------- preaprobar_credito
 
 
+def evaluar_solicitud_guardada(solicitud: dict) -> Resultado:
+    """Reevalúa una solicitud guardada con la política vigente, sin usar su evaluación guardada.
+
+    La usan `preaprobar_credito` y el hook de preaprobación (spec 006): ambas barreras deciden
+    con la misma evaluación y no pueden discrepar.
+    """
+    ingreso = solicitud["ingreso_verificado"]
+    hallazgos = [
+        Hallazgo(TipoHallazgo(h["tipo"]), h["mensaje"], h["campo"], h["regla"])
+        for h in solicitud["hallazgos"]
+    ]
+    return _evaluar(
+        solicitud["monto"],
+        solicitud["plazo_meses"],
+        solicitud["ingreso_declarado"],
+        ingreso and ingreso["valor"],
+        hallazgos,
+    )
+
+
 def preaprobar_credito(
     almacen: AlmacenEstado, id_solicitud: str, ahora: datetime | None = None
 ) -> dict:
@@ -301,18 +321,7 @@ def preaprobar_credito(
         _exigir_identidad(datos, solicitud["id_solicitante"])
 
         # Nunca se usa la evaluación guardada para decidir: se recalcula con la política vigente.
-        ingreso = solicitud["ingreso_verificado"]
-        hallazgos = [
-            Hallazgo(TipoHallazgo(h["tipo"]), h["mensaje"], h["campo"], h["regla"])
-            for h in solicitud["hallazgos"]
-        ]
-        resultado = _evaluar(
-            solicitud["monto"],
-            solicitud["plazo_meses"],
-            solicitud["ingreso_declarado"],
-            ingreso and ingreso["valor"],
-            hallazgos,
-        )
+        resultado = evaluar_solicitud_guardada(solicitud)
         if resultado.decision is not Decision.PREAPROBABLE:
             raise ErrorCore(
                 TipoError.NEGOCIO,

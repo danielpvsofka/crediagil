@@ -31,6 +31,12 @@ cambies aquí, en código ni en prompts.
   Herramientas: `buscar_solicitante`, `verificar_identidad`, `validar_extraccion`,
   `registrar_solicitud`, `calcular_capacidad_pago` (solo simula), `preaprobar_credito` (la única
   que compromete; revalida identidad y reglas en el core) y `escalar_a_analista`.
+- Hooks de las reglas 1 y 2: `crediagil.agent.hooks.crear_hooks(almacen, registro)` devuelve la
+  configuración `PreToolUse` para `ClaudeAgentOptions(hooks=...)` (`claude-agent-sdk` es
+  dependencia). Niegan `registrar_solicitud` sin identidad vigente y `preaprobar_credito` si no
+  se cumplen identidad, documentos y política recalculada. Son de solo lectura y fail-closed;
+  cada negación queda en `RegistroNegaciones` para la interfaz. El nombre del servidor debe
+  coincidir con la clave de `mcp_servers`.
 - Tests: `uv run pytest`. Todo cambio de código incluye sus tests en el mismo cambio, junto al
   código, y cubre los bordes exactos de cada umbral.
 - Formato: `ruff format` se aplica solo tras editar cualquier `.py` (hook). Lint:
